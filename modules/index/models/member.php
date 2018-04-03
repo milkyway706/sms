@@ -107,7 +107,7 @@ class Model extends \Kotchasan\Model
             }
           } elseif (preg_match('/active_([01])/', $action, $match2)) {
             // สถานะการเข้าระบบ
-            $model->db()->update($user_table, array(
+            $this->db()->update($user_table, array(
               array('id', $match[1]),
               array('id', '!=', '1')
               ), array(

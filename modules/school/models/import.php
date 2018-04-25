@@ -318,10 +318,10 @@ class Model extends \Kotchasan\Model
       }
       $search = $query->first('S.id');
       if (!$search) {
-        // สถานะครู
+        // สถานะนักเรียน
         $user['status'] = isset(self::$cfg->student_status) ? self::$cfg->student_status : 0;
         // register
-        $user = \Index\Register\Model::execute($this, $user);
+        $user = \Index\Register\Model::execute($this, $user, array());
         // id ของ student
         $student['id'] = $user['id'];
         // บันทึก student

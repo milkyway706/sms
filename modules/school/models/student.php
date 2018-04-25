@@ -87,7 +87,7 @@ class Model extends \Kotchasan\Model
             // ใหม่หรือต้องการปรับปรุง Username บันทึก user
             if ($student['id_card'] != '' && $user['birthday'] != '' && ($index->id == 0 || $updatepassword) && preg_match('/([0-9]{4,4})\-([0-9]{1,2})\-([0-9]{1,2})/', $user['birthday'], $match)) {
               $user['username'] = $student['id_card'];
-              $user['password'] = ((int)Language::get('YEAR_OFFSET') + (int)$match[1]).sprintf('%02d', $match[2]).sprintf('%02d', $match[3]);
+              $user['password'] = (543 + (int)$match[1]).sprintf('%02d', $match[2]).sprintf('%02d', $match[3]);
             }
             if ($index->id == 0) {
               // สถานะนักเรียน
@@ -131,7 +131,8 @@ class Model extends \Kotchasan\Model
                   $user['picture'] = $picture;
                 }
                 if ($updatepassword && isset($user['password']) && isset($user['username'])) {
-                  $user['password'] = sha1($user['password'].$user['username']);
+                  $user['salt'] = uniqid();
+                  $user['password'] = sha1($user['password'].$user['salt']);
                 }
                 // update user
                 $this->db()->update($this->getTableName('user'), $index->id, $user);

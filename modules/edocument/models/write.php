@@ -170,7 +170,7 @@ class Model extends \Kotchasan\Model
                 $this->db()->update($this->getTableName('edocument'), $index->id, $save);
               }
               if ($request->post('send_mail')->toInt() == 1) {
-                // ข้อมูลอีเมล์
+                // ข้อมูลอีเมล
                 $subject = Language::replace('There are new documents sent to you at %WEBTITLE%', array('%WEBTITLE%' => self::$cfg->web_title));
                 $msg = Language::replace('You received a new document %URL%', array('%URL%' => WEB_URL.'index.php?module=edocument-received'));
                 // query สมาชิกสถานะที่เลือก
@@ -200,7 +200,7 @@ class Model extends \Kotchasan\Model
                   $ret['alert'] = Language::get('Saved successfully');
                 }
               } else {
-                // ไม่ต้องส่งอีเมล์
+                // ไม่ต้องส่งอีเมล
                 $ret['alert'] = Language::get('Saved successfully');
               }
               $ret['location'] = $request->getUri()->postBack('index.php', array('module' => 'edocument-sent'));

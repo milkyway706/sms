@@ -88,7 +88,7 @@ class Model extends \Kotchasan\Model
             foreach ($query->execute() as $item) {
               // สุ่มรหัสผ่านใหม่
               $password = \Kotchasan\Text::rndname(6);
-              // ส่งอีเมล์ขอรหัสผ่านใหม่
+              // ส่งอีเมลขอรหัสผ่านใหม่
               $err = \Index\Forgot\Model::execute($item['id'], $password, $item['username']);
               if ($err != '') {
                 $msgs[] = $err;
@@ -96,7 +96,7 @@ class Model extends \Kotchasan\Model
             }
             if (isset($password)) {
               if (empty($msgs)) {
-                // ส่งอีเมล์ สำเร็จ
+                // ส่งอีเมล สำเร็จ
                 $ret['alert'] = Language::get('Your message was sent successfully');
               } else {
                 // มีข้อผิดพลาด

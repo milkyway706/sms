@@ -270,12 +270,11 @@ class Model extends \Kotchasan\Model
         $student['id_card'] = preg_replace('/[^0-9]+/', '', $value);
       } elseif ($key == 4) {
         // birthday
-        $year_offset = (int)Language::get('YEAR_OFFSET');
         if (preg_match('/([0-9]{4,4})[\-\/]([0-9]{1,2})[\-\/]([0-9]{1,2})/', $value, $match)) {
-          $user['birthday'] = ((int)$match[1] - $year_offset).'-'.$match[2].'-'.$match[3];
+          $user['birthday'] = ((int)$match[1] - 543).'-'.$match[2].'-'.$match[3];
           $password = $match[1].sprintf('%02d', $match[2]).sprintf('%02d', $match[3]);
         } elseif (preg_match('/([0-9]{1,2})[\-\/]([0-9]{1,2})[\-\/]([0-9]{4,4})/', $value, $match)) {
-          $user['birthday'] = ((int)$match[3] - $year_offset).'-'.$match[2].'-'.$match[1];
+          $user['birthday'] = ((int)$match[3] - 543).'-'.$match[2].'-'.$match[1];
           $password = $match[3].sprintf('%02d', $match[2]).sprintf('%02d', $match[1]);
         }
       } elseif ($key == 5) {

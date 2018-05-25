@@ -59,6 +59,18 @@ function defaultSubmit(ds) {
       if (modal && val == 'close') {
         modal.hide();
       }
+    } else if (prop == 'showmodal') {
+      if (!modal) {
+        modal = new GModal();
+      }
+      modal.show(val);
+      val.evalScript();
+    } else if (prop == 'elem') {
+      el = $E(val);
+      if (el) {
+        el.className = ds.class;
+        el.title = ds.title;
+      }
     } else if (prop == 'location') {
       _location = val;
     } else if (prop == 'url') {

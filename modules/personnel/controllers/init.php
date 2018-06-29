@@ -8,12 +8,12 @@
 
 namespace Personnel\Init;
 
-use \Kotchasan\Http\Request;
-use \Kotchasan\Language;
-use \Gcms\Login;
+use Gcms\Login;
+use Kotchasan\Http\Request;
+use Kotchasan\Language;
 
 /**
- * Init Module
+ * Init Module.
  *
  * @author Goragod Wiriya <admin@goragod.com>
  *
@@ -21,58 +21,59 @@ use \Gcms\Login;
  */
 class Controller extends \Kotchasan\KBase
 {
-
-  /**
-   * ฟังก์ชั่นเริ่มต้นการทำงานของโมดูลที่ติดตั้ง
-   * และจัดการเมนูของโมดูล
-   *
-   * @param Request $request
-   * @param \Index\Menu\Controller $menu
-   * @param array $login
-   */
-  public static function execute(Request $request, $menu, $login)
-  {
-    $submenus = array(
-      array(
-        'text' => '{LNG_Personnel list}',
-        'url' => 'index.php?module=personnel-setup'
-      )
-    );
-    if (Login::checkPermission($login, 'can_manage_personnel')) {
-      $submenus[] = array(
-        'text' => '{LNG_Import} {LNG_Personnel list}',
-        'url' => 'index.php?module=personnel-import'
-      );
-      $submenus[] = array(
-        'text' => '{LNG_Add New} {LNG_Personnel}',
-        'url' => 'index.php?module=personnel-write'
-      );
+    /**
+     * ฟังก์ชั่นเริ่มต้นการทำงานของโมดูลที่ติดตั้ง
+     * และจัดการเมนูของโมดูล.
+     *
+     * @param Request                $request
+     * @param \Index\Menu\Controller $menu
+     * @param array                  $login
+     */
+    public static function execute(Request $request, $menu, $login)
+    {
+        $submenus = array(
+            array(
+                'text' => '{LNG_Personnel list}',
+                'url' => 'index.php?module=personnel-setup',
+            ),
+        );
+        if (Login::checkPermission($login, 'can_manage_personnel')) {
+            $submenus[] = array(
+                'text' => '{LNG_Import} {LNG_Personnel list}',
+                'url' => 'index.php?module=personnel-import',
+            );
+            $submenus[] = array(
+                'text' => '{LNG_Add New} {LNG_Personnel}',
+                'url' => 'index.php?module=personnel-write',
+            );
+        }
+        $menu->add('module', '{LNG_Personnel}', null, $submenus);
+        $submenus = array(
+            array(
+                'text' => '{LNG_Settings}',
+                'url' => 'index.php?module=personnel-settings',
+            ),
+        );
+        foreach (Language::get('PERSONNEL_CATEGORY') as $type => $text) {
+            $submenus[] = array(
+                'text' => $text,
+                'url' => 'index.php?module=personnel-category&amp;type='.$type,
+            );
+        }
+        $menu->add('settings', '{LNG_Personnel}', null, $submenus);
     }
-    $menu->add('module', '{LNG_Personnel}', null, $submenus);
-    $submenus = array(
-      array(
-        'text' => '{LNG_Settings}',
-        'url' => 'index.php?module=personnel-settings'
-      )
-    );
-    foreach (Language::get('PERSONNEL_CATEGORY') as $type => $text) {
-      $submenus[] = array(
-        'text' => $text,
-        'url' => 'index.php?module=personnel-category&amp;type='.$type
-      );
-    }
-    $menu->add('settings', '{LNG_Personnel}', null, $submenus);
-  }
 
-  /**
-   * รายการ permission ของโมดูล
-   *
-   * @param array $permissions
-   * @return array
-   */
-  public static function updatePermissions($permissions)
-  {
-    $permissions['can_manage_personnel'] = '{LNG_Can manage personnel}';
-    return $permissions;
-  }
+    /**
+     * รายการ permission ของโมดูล.
+     *
+     * @param array $permissions
+     *
+     * @return array
+     */
+    public static function updatePermissions($permissions)
+    {
+        $permissions['can_manage_personnel'] = '{LNG_Can manage personnel}';
+
+        return $permissions;
+    }
 }

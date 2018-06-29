@@ -1,4 +1,5 @@
 <?php
+
 /* config.php */
 return array (
   'edocument_format_no' => 'ที่ ศธ1234/%04d',

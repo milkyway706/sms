@@ -73,8 +73,8 @@ class Controller extends \Gcms\Controller
                 }
             }
         }
-        // 404.html
+        // 404
 
-        return \Index\Error\Controller::page404();
+        return \Index\Error\Controller::execute($this);
     }
 }

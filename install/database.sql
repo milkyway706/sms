@@ -261,8 +261,8 @@ ALTER TABLE `{prefix}_edocument_download`
 -- Indexes for table `{prefix}_grade`
 --
 ALTER TABLE `{prefix}_grade`
-  ADD PRIMARY KEY (`id`);
-
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `course_id` (`course_id`);
 --
 -- Indexes for table `{prefix}_personnel`
 --

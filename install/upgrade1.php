@@ -41,7 +41,7 @@ if (defined('ROOT_PATH')) {
             $content[] = '<li class="correct">ปรับปรุงตาราง `'.$table.'` สำเร็จ</li>';
             // ตาราง grade
             $table = $db_config['prefix'].'_grade';
-            $conn->query('ALTER TABLE `$table` ADD KEY `course_id` (`course_id`)');
+            $conn->query('ALTER TABLE `'.$table.'` ADD KEY `course_id` (`course_id`)');
             $content[] = '<li class="correct">ปรับปรุงตาราง `'.$table.'` สำเร็จ</li>';
             // บันทึก settings/config.php
             $config['version'] = $new_config['version'];

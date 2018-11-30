@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/models/student.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Student;
@@ -89,6 +89,7 @@ class Model extends \Kotchasan\Model
                         if ($student['id_card'] != '' && $user['birthday'] != '' && ($index->id == 0 || $updatepassword) && preg_match('/([0-9]{4,4})\-([0-9]{1,2})\-([0-9]{1,2})/', $user['birthday'], $match)) {
                             $user['username'] = $student['id_card'];
                             $user['password'] = (543 + (int) $match[1]).sprintf('%02d', $match[2]).sprintf('%02d', $match[3]);
+                            $updatepassword = true;
                         }
                         if ($index->id == 0) {
                             // สถานะนักเรียน

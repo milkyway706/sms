@@ -188,7 +188,7 @@ CREATE TABLE `{prefix}_student` (
   `department` int(11) NOT NULL,
   `class` int(11) NOT NULL,
   `room` int(11) NOT NULL,
-  `number` tinyint(3) NOT NULL,
+  `number` tinyint(3) DEFAULT '0',
   `id_card` varchar(13) COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -202,7 +202,7 @@ CREATE TABLE `{prefix}_user` (
   `id` int(11) NOT NULL,
   `username` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `password` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `salt` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `salt` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `token` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `status` tinyint(1) NOT NULL,
   `permission` text COLLATE utf8_unicode_ci NOT NULL,

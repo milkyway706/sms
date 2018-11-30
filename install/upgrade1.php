@@ -29,7 +29,7 @@ if (defined('ROOT_PATH')) {
     }
     if (!$error) {
         // เชื่อมต่อฐานข้อมูลสำเร็จ
-        $content[] = '<li class="correct">เชื่อมต่อฐานข้อมูลสำเร็จ</li>';
+        $content[] = array('<li class="correct">เชื่อมต่อฐานข้อมูลสำเร็จ</li>');
         try {
             // ตาราง user
             $table = $db_config['prefix'].'_user';
@@ -43,8 +43,10 @@ if (defined('ROOT_PATH')) {
             $content[] = '<li class="correct">ปรับปรุงตาราง `'.$table.'` สำเร็จ</li>';
             // ตาราง grade
             $table = $db_config['prefix'].'_grade';
-            $conn->query('ALTER TABLE `'.$table.'` ADD KEY `course_id` (`course_id`)');
-            $content[] = '<li class="correct">ปรับปรุงตาราง `'.$table.'` สำเร็จ</li>';
+            if (!fieldExists($conn, $table, 'course_id')) {
+                $conn->query('ALTER TABLE `'.$table.'` ADD INDEX (`course_id`)');
+                $content[] = '<li class="correct">ปรับปรุงตาราง `'.$table.'` สำเร็จ</li>';
+            }
             // บันทึก settings/config.php
             $config['version'] = $new_config['version'];
             $f = save($config, ROOT_PATH.'settings/config.php');
@@ -84,6 +86,20 @@ function fieldExists($conn, $table_name, $field)
     return empty($result) ? false : true;
 }
 
+/**
+ * ตรวจสอบ index ซ้ำ.
+ *
+ * @param $conn
+ * @param $table_name
+ * @param $index
+ */
+function indexExists($conn, $table_name, $index)
+{
+    $query = $conn->query("SELECT index_name FROM INFORMATION_SCHEMA.STATISTICS WHERE table_name='$table_name' AND index_name='$index'");
+    $result = $query->fetchAll(\PDO::FETCH_ASSOC);
+
+    return empty($result) ? false : true;
+}
 /**
  * @param $config
  * @param $file

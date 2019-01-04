@@ -51,7 +51,7 @@ class View extends \Gcms\View
      */
     public function render(Request $request, $course, $login)
     {
-        $this->canManage = Login::checkPermission($login, array('can_manage_course', 'can_teacher'));
+        $this->canManage = Login::checkPermission($login, array('can_manage_student', 'can_manage_course', 'can_teacher'));
         // ค่าที่ส่งมา
         $room = $request->request('room')->toInt();
         // โหลดตัวแปรต่างๆ

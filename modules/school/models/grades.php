@@ -65,13 +65,20 @@ class Model extends \Kotchasan\Model
                     $model = new \Kotchasan\Model();
                     // ตาราง
                     $table = $model->getTableName('grade');
-                    if ($action === 'delete' && Login::checkPermission($login, array('can_manage_course', 'can_teacher'))) {
+                    if ($action === 'delete' && Login::checkPermission($login, array('can_manage_student', 'can_manage_course', 'can_teacher'))) {
                         // ลบ
                         $model->db()->delete($table, array('id', $match[1]), 0);
                         // reload
                         $ret['location'] = 'reload';
-                    } elseif ($action === 'grade' || $action === 'number' || $action === 'room') {
-                        // อัปเดทข้อมูล
+                    } elseif (($action === 'number' || $action === 'room') && Login::checkPermission($login, array('can_manage_student', 'can_manage_course', 'can_teacher'))) {
+                        // อัปเดทข้อมูล เลขที่ ห้อง
+                        $value = $request->post('value')->topic();
+                        $id = (int) $match[1][0];
+                        $model->db()->update($table, $id, array($action => $value));
+                        // คืนค่า
+                        $ret[$action.'_'.$id] = $value;
+                    } elseif ($action === 'grade' && Login::checkPermission($login, array('can_manage_student', 'can_manage_course', 'can_teacher', 'can_rate_student'))) {
+                        // อัปเดทข้อมูล เกรด
                         $value = $request->post('value')->topic();
                         $id = (int) $match[1][0];
                         $model->db()->update($table, $id, array($action => $value));

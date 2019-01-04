@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/controllers/course.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Course;
@@ -39,31 +39,40 @@ class Controller extends \Gcms\Controller
         $title = $course->id == 0 ? '{LNG_Add New}' : '{LNG_Edit}';
         $this->title = Language::trans($title.' {LNG_Course}');
         // เลือกเมนู
-        $this->menu = 'module';
-        // ครู-อาจาร์ย, สามารถจัดการรายวิชาได้
-        if ($course && $login = Login::isTeacher('can_manage_course')) {
-            // แสดงผล
-            $section = Html::create('section', array(
-                'class' => 'content_bg',
-            ));
-            // breadcrumbs
-            $breadcrumbs = $section->add('div', array(
-                'class' => 'breadcrumbs',
-            ));
-            $ul = $breadcrumbs->add('ul');
-            $ul->appendChild('<li><span class="icon-modules">{LNG_Module}</span></li>');
-            $ul->appendChild('<li><span>{LNG_School}</span></li>');
-            $ul->appendChild('<li><a href="{BACKURL?module=school-courses&id=0}">{LNG_Course}</a></li>');
-            $ul->appendChild('<li><span>'.$title.'</span></li>');
-            $section->add('header', array(
-                'innerHTML' => '<h2 class="icon-write">'.$this->title.'</h2>',
-            ));
-            // แสดงฟอร์ม
-            $section->appendChild(createClass('School\Course\View')->render($request, $course, $login));
+        $this->menu = 'school';
+        // สมาชิก
+        $login = Login::isMember();
+        if ($course && $login) {
+            if (
+                /* ครูเจ้าของรายวิชา */
+                ($course->teacher_id == $login['id'] && Login::checkPermission($login, 'can_teacher')) ||
+                /* สามารถจัดการรายวิชาได้ */
+                Login::checkPermission($login, 'can_manage_course')
+            ) {
+                // แสดงผล
+                $section = Html::create('section', array(
+                    'class' => 'content_bg',
+                ));
+                // breadcrumbs
+                $breadcrumbs = $section->add('div', array(
+                    'class' => 'breadcrumbs',
+                ));
+                $ul = $breadcrumbs->add('ul');
+                $ul->appendChild('<li><span class="icon-modules">{LNG_Module}</span></li>');
+                $ul->appendChild('<li><span>{LNG_School}</span></li>');
+                $ul->appendChild('<li><a href="{BACKURL?module=school-courses&id=0}">{LNG_Course}</a></li>');
+                $ul->appendChild('<li><span>'.$title.'</span></li>');
+                $section->add('header', array(
+                    'innerHTML' => '<h2 class="icon-write">'.$this->title.'</h2>',
+                ));
+                // แสดงฟอร์ม
+                $section->appendChild(createClass('School\Course\View')->render($request, $course, $login));
 
-            return $section->render();
+                return $section->render();
+            }
         }
         // 404
+
         return \Index\Error\Controller::execute($this);
     }
 }

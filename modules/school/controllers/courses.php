@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/controllers/courses.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Courses;
@@ -36,9 +36,9 @@ class Controller extends \Gcms\Controller
         // ข้อความ title bar
         $this->title = Language::trans('{LNG_Manage} {LNG_Courses}');
         // เลือกเมนู
-        $this->menu = 'module';
-        // ครู-อาจาร์ย, สามารถจัดการรายวิชาได้
-        if ($login = Login::isTeacher('can_manage_course')) {
+        $this->menu = 'school';
+        // ครู-อาจาร์ย, สามารถจัดการรายชื่อนักเรียนได้, สามารถจัดการรายวิชาได้
+        if ($login = Login::checkPermission(Login::isMember(), array('can_manage_student', 'can_manage_course', 'can_teacher', 'can_rate_student'))) {
             // แสดงผล
             $section = Html::create('section', array(
                 'class' => 'content_bg',
@@ -60,6 +60,7 @@ class Controller extends \Gcms\Controller
             return $section->render();
         }
         // 404
+
         return \Index\Error\Controller::execute($this);
     }
 }

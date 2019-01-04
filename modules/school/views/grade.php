@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/views/grade.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Grade;
@@ -27,8 +27,17 @@ class View extends \Gcms\View
      * ข้อมูลโมดูล.
      */
     private $typies;
+    /**
+     * @var mixed
+     */
     private $credit;
+    /**
+     * @var mixed
+     */
     private $total_credit;
+    /**
+     * @var mixed
+     */
     private $total;
 
     /**
@@ -92,7 +101,7 @@ class View extends \Gcms\View
                 array(
                     'name' => 'term',
                     'text' => '{LNG_Term}',
-                    'options' => \Index\Category\Model::init('term')->toSelect(),
+                    'options' => \School\Category\Model::init()->toSelect('term'),
                     'value' => $student->term,
                 ),
             ),
@@ -131,6 +140,7 @@ class View extends \Gcms\View
             ),
         ));
         // คืนค่า HTML
+
         return $table->render();
     }
 

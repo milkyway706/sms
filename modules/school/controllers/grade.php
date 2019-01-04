@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/controllers/grade.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Grade;
@@ -33,44 +33,49 @@ class Controller extends \Gcms\Controller
      */
     public function render(Request $request)
     {
-        // อ่านข้อมูลนักเรียน
-        $student = \School\User\Model::get($request->request('id')->toInt());
-        if ($student && Login::isTeacher('can_mange_student')) {
-            // ครู-อาจารย์, สามารถจัดการนักเรียนได้ ดูได้ทุกคน
-        } elseif ($student && $login = Login::isStudent()) {
-            if ($login['id'] != $student->id) {
-                // นักเรียน ดูได้เฉพาะของตัวเอง
-                $student = null;
-            }
-        }
         // ข้อความ title bar
         $this->title = Language::get('Grade Report');
         // เลือกเมนู
-        $this->menu = 'module';
+        $this->menu = 'school';
+        // อ่านข้อมูลนักเรียน
+        $student = \School\User\Model::get($request->request('id')->toInt());
         // สมาชิก
-        if ($student) {
-            $this->title .= ' '.$student->name;
-            // แสดงผล
-            $section = Html::create('section', array(
-                'class' => 'content_bg',
-            ));
-            // breadcrumbs
-            $breadcrumbs = $section->add('div', array(
-                'class' => 'breadcrumbs',
-            ));
-            $ul = $breadcrumbs->add('ul');
-            $ul->appendChild('<li><span class="icon-elearning">{LNG_School}</span></li>');
-            $ul->appendChild('<li><span>'.$student->name.'</span></li>');
-            $ul->appendChild('<li><span>{LNG_Grade}</span></li>');
-            $section->add('header', array(
-                'innerHTML' => '<h2 class="icon-elearning">'.$this->title.'</h2>',
-            ));
-            // แสดงตาราง
-            $section->appendChild(createClass('School\Grade\View')->render($request, $student));
+        $login = Login::isMember();
+        if ($student && $login) {
+            if (Login::checkPermission($login, array('can_manage_student', 'can_manage_course', 'can_teacher', 'can_rate_student'))) {
+                // ครู-อาจารย์, สามารถจัดการนักเรียนได้ ดูได้ทุกคน
+            } elseif ($login['status'] == self::$cfg->student_status) {
+                // นักเรียน ดูได้เฉพาะของตัวเอง
+                if ($login['id'] != $student->id) {
+                    $student = null;
+                }
+            }
+            // สมาชิก
+            if ($student) {
+                $this->title .= ' '.$student->name;
+                // แสดงผล
+                $section = Html::create('section', array(
+                    'class' => 'content_bg',
+                ));
+                // breadcrumbs
+                $breadcrumbs = $section->add('div', array(
+                    'class' => 'breadcrumbs',
+                ));
+                $ul = $breadcrumbs->add('ul');
+                $ul->appendChild('<li><span class="icon-elearning">{LNG_School}</span></li>');
+                $ul->appendChild('<li><span>'.$student->name.'</span></li>');
+                $ul->appendChild('<li><span>{LNG_Grade}</span></li>');
+                $section->add('header', array(
+                    'innerHTML' => '<h2 class="icon-elearning">'.$this->title.'</h2>',
+                ));
+                // แสดงตาราง
+                $section->appendChild(createClass('School\Grade\View')->render($request, $student));
 
-            return $section->render();
+                return $section->render();
+            }
         }
         // 404
+
         return \Index\Error\Controller::execute($this);
     }
 }

@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/views/student.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Student;
@@ -53,7 +53,7 @@ class View extends \Gcms\View
             'id' => 'student_name',
             'labelClass' => 'g-input icon-customer',
             'itemClass' => 'width50',
-            'label' => '{LNG_Name} {LNG_Surname}',
+            'label' => '{LNG_Name}',
             'maxlength' => 100,
             'value' => $student->name,
         ));
@@ -88,15 +88,17 @@ class View extends \Gcms\View
             'label' => '{LNG_Birthday}',
             'value' => $student->birthday,
         ));
-        foreach (Language::get('SCHOOL_CATEGORY') as $key => $label) {
+        // หมวดหมู่ของนักเรียน
+        $category = \School\Category\Model::init();
+        foreach (Language::get('SCHOOL_CATEGORY') as $type => $label) {
             $fieldset->add('select', array(
-                'id' => 'student_'.$key,
+                'id' => 'student_'.$type,
                 'labelClass' => 'g-input icon-office',
                 'itemClass' => 'item',
-                'label' => $label,
-                'options' => array(0 => '{LNG_please select}') + \Index\Category\Model::init($key)->toSelect(),
+                'label' => $category->label($type),
+                'options' => array(0 => '{LNG_please select}') + $category->toSelect($type),
                 'disabled' => $login['id'] == $student->id,
-                'value' => $student->$key,
+                'value' => $student->$type,
             ));
         }
         $groups = $fieldset->add('groups');
@@ -128,8 +130,8 @@ class View extends \Gcms\View
             'value' => $student->address,
         ));
         // picture
-        if (!empty($student->picture) && is_file(ROOT_PATH.$student->picture)) {
-            $img = WEB_URL.$student->picture;
+        if (is_file(ROOT_PATH.DATA_FOLDER.'school/'.$student->id.'.jpg')) {
+            $img = WEB_URL.DATA_FOLDER.'school/'.$student->id.'.jpg';
         } else {
             $img = WEB_URL.'modules/school/img/noimage.jpg';
         }
@@ -151,7 +153,7 @@ class View extends \Gcms\View
             'id' => 'student_parent',
             'labelClass' => 'g-input icon-customer',
             'itemClass' => 'width50',
-            'label' => '{LNG_Name} {LNG_Surname}',
+            'label' => '{LNG_Name}',
             'maxlength' => 100,
             'value' => $student->parent,
         ));

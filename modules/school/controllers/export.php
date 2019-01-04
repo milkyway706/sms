@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/controllers/export.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Export;
@@ -53,65 +53,69 @@ class Controller extends \Kotchasan\Controller
     {
         // อ่านข้อมูลนักเรียน
         $student = \School\User\Model::get($request->get('id')->toInt());
-        if ($student && Login::isTeacher('can_mange_student')) {
-            // ครู-อาจารย์, สามารถจัดการนักเรียนได้ ดูได้ทุกคน
-        } elseif ($student && $login = Login::isStudent()) {
-            if ($login['id'] != $student->id) {
+        // สมาชิก
+        $login = Login::isMember();
+        if ($student && $login) {
+            if (Login::checkPermission($login, array('can_manage_student', 'can_manage_course', 'can_teacher', 'can_rate_student'))) {
+                // ครู-อาจารย์, สามารถจัดการนักเรียนได้ ดูได้ทุกคน
+            } elseif ($login['status'] == self::$cfg->student_status) {
                 // นักเรียน ดูได้เฉพาะของตัวเอง
-                $student = null;
-            }
-        }
-        if ($student) {
-            // ค่าที่ส่งมา
-            $student->year = $request->get('year', self::$cfg->academic_year)->toInt();
-            $student->term = $request->get('term', self::$cfg->term)->toInt();
-            // header
-            $header = array(
-                Language::get('Course Code'),
-                Language::get('Course Name'),
-                Language::get('Type'),
-                Language::get('Credit'),
-                Language::get('Grade'),
-            );
-            // content
-            $datas = array();
-            $school_grades = Language::get('SCHOOL_GRADES');
-            $course_typies = Language::get('COURSE_TYPIES');
-            $credit = 0;
-            $total_credit = 0;
-            $total = 0;
-            foreach (\School\Grade\Model::toDataTable($student)->toArray()->cacheOn()->execute() as $item) {
-                if ($item['credit'] > 0 && $item['grade'] > 0) {
-                    $credit += $item['credit'];
-                    $total += ($item['grade'] * $item['credit']);
+                if ($login['id'] != $student->id) {
+                    $student = null;
                 }
-                $total_credit += $item['credit'];
-                $datas[] = array(
-                    $item['course_code'],
-                    $item['course_name'],
-                    isset($course_typies[$item['type']]) ? $course_typies[$item['type']] : '',
-                    $item['credit'] == 0 ? '' : $item['credit'],
-                    isset($school_grades[$item['grade']]) ? $school_grades[$item['grade']] : '',
-                );
             }
-            if ($request->get('export')->toString() == 'print') {
-                // ส่งออกเป็น HTML สำหรับพิมพ์
-                \School\Export\View::render($student, $header, $datas, $credit, $total / $total_credit);
-            } else {
-                $title = array(
-                    array(Language::trans('{LNG_Name} {LNG_Surname}'), $student->name),
-                    array(Language::get('Student ID'), $student->student_id),
-                    array(Language::get('Academic year'), $student->year.'/'.$student->term),
+            if ($student) {
+                // ค่าที่ส่งมา
+                $student->year = $request->get('year', self::$cfg->academic_year)->toInt();
+                $student->term = $request->get('term', self::$cfg->term)->toInt();
+                // header
+                $header = array(
+                    Language::get('Course Code'),
+                    Language::get('Course Name'),
+                    Language::get('Type'),
+                    Language::get('Credit'),
+                    Language::get('Grade'),
                 );
-                $datas[] = array(Language::get('Credits in this semester'), number_format($credit, 1, '.', ''));
-                $datas[] = array(Language::get('Grades in this semester'), number_format($total / $total_credit, 2, '.', ''));
-                // ส่งออกไฟล์ csv
-                \Kotchasan\Csv::send(implode('_', array(
-                    $student->student_id,
-                    $student->name,
-                    $student->year,
-                    $student->term,
-                )), null, array_merge($title, array($header), $datas));
+                // content
+                $datas = array();
+                $school_grades = Language::get('SCHOOL_GRADES');
+                $course_typies = Language::get('COURSE_TYPIES');
+                $credit = 0;
+                $total_credit = 0;
+                $total = 0;
+                foreach (\School\Grade\Model::toDataTable($student)->toArray()->cacheOn()->execute() as $item) {
+                    if ($item['credit'] > 0 && $item['grade'] > 0) {
+                        $credit += $item['credit'];
+                        $total += ($item['grade'] * $item['credit']);
+                    }
+                    $total_credit += $item['credit'];
+                    $datas[] = array(
+                        $item['course_code'],
+                        $item['course_name'],
+                        isset($course_typies[$item['type']]) ? $course_typies[$item['type']] : '',
+                        $item['credit'] == 0 ? '' : $item['credit'],
+                        isset($school_grades[$item['grade']]) ? $school_grades[$item['grade']] : '',
+                    );
+                }
+                if ($request->get('export')->toString() == 'print') {
+                    // ส่งออกเป็น HTML สำหรับพิมพ์
+                    \School\Export\View::render($student, $header, $datas, $credit, ($total_credit > 0 ? $total / $total_credit : 0));
+                } else {
+                    $title = array(
+                        array(Language::trans('{LNG_Name}'), $student->name),
+                        array(Language::get('Student ID'), $student->student_id),
+                        array(Language::get('Academic year'), $student->year.'/'.$student->term),
+                    );
+                    $datas[] = array(Language::get('Credits in this semester'), number_format($credit, 1, '.', ''));
+                    $datas[] = array(Language::get('Grades in this semester'), number_format(($total_credit > 0 ? $total / $total_credit : 0), 2, '.', ''));
+                    // ส่งออกไฟล์ csv
+                    \Kotchasan\Csv::send(implode('_', array(
+                        $student->student_id,
+                        $student->name,
+                        $student->year,
+                        $student->term,
+                    )), null, array_merge($title, array($header), $datas));
+                }
             }
         }
     }
@@ -159,13 +163,13 @@ class Controller extends \Kotchasan\Controller
         $header = array(
             Language::get('Number'),
             Language::trans('{LNG_Student ID} *, **'),
-            Language::trans('{LNG_Name} {LNG_Surname} *'),
+            Language::trans('{LNG_Name} *'),
             Language::trans('{LNG_Identification number}, **'),
             Language::get('Birthday'),
             Language::get('Phone'),
             Language::get('Sex'),
             Language::get('Address'),
-            Language::trans('{LNG_Name} {LNG_Surname} ({LNG_Parent})'),
+            Language::trans('{LNG_Name} ({LNG_Parent})'),
             Language::trans('{LNG_Phone} ({LNG_Parent})'),
         );
         $birthday = ((int) date('Y') + (int) Language::get('YEAR_OFFSET')).'-01-31';

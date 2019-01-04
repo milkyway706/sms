@@ -2,10 +2,10 @@
 /**
  * @filesource modules/personnel/views/import.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace Personnel\Import;
@@ -54,8 +54,8 @@ class View extends \Gcms\View
         ));
         // หมวดหมู่ของบุคลากร
         $categories = array();
-        foreach (Language::get('PERSONNEL_CATEGORY') as $key => $label) {
-            $categories[] = '<a href="'.WEB_URL.'index.php?module=personnel-category&amp;type='.$key.'" target=_blank>'.$label.'</a>';
+        foreach (Language::get('CATEGORIES') as $key => $label) {
+            $categories[] = '<a href="'.WEB_URL.'index.php?module=index-categories&amp;type='.$key.'" target=_blank>'.$label.'</a>';
         }
         $file = 'modules/personnel/views/import_'.Language::name().'.html';
         if (!is_file(ROOT_PATH.$file)) {

@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/controllers/register.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Register;
@@ -38,9 +38,9 @@ class Controller extends \Gcms\Controller
         // ข้อความ title bar
         $this->title = Language::get('Register course');
         // เลือกเมนู
-        $this->menu = 'module';
+        $this->menu = 'school';
         // ครู-อาจาร์ย, สามารถจัดการรายวิชาได้
-        if (!empty($course->id) && Login::isTeacher('can_manage_course')) {
+        if (!empty($course->id) && Login::checkPermission(Login::isMember(), array('can_manage_course', 'can_teacher'))) {
             $this->title .= ' '.Language::get('Course').' '.$course->course_name.($course->course_code != '' ? ' ('.$course->course_code.')' : '');
             // แสดงผล
             $section = Html::create('section', array(
@@ -64,6 +64,7 @@ class Controller extends \Gcms\Controller
             return $section->render();
         }
         // 404
+
         return \Index\Error\Controller::execute($this);
     }
 }

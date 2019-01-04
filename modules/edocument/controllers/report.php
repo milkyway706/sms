@@ -2,10 +2,10 @@
 /**
  * @filesource modules/edocument/controllers/report.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace Edocument\Report;
@@ -39,7 +39,7 @@ class Controller extends \Gcms\Controller
             // ข้อความ title bar
             $this->title = Language::trans('{LNG_Download history} '.$index->topic);
             // เลือกเมนู
-            $this->menu = 'module';
+            $this->menu = 'edocument';
             // Login
             if ($login = Login::isMember()) {
                 // แสดงผล
@@ -65,6 +65,7 @@ class Controller extends \Gcms\Controller
             }
         }
         // 404
+
         return \Index\Error\Controller::execute($this);
     }
 }

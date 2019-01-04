@@ -2,10 +2,10 @@
 /**
  * @filesource modules/personnel/views/setup.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace Personnel\Setup;
@@ -26,8 +26,10 @@ class View extends \Gcms\View
     /**
      * ข้อมูลโมดูล.
      */
-    private $position;
-    private $department;
+    private $category;
+    /**
+     * @var mixed
+     */
     private $personnel_status;
 
     /**
@@ -44,10 +46,10 @@ class View extends \Gcms\View
         // สถานะบุคลากร
         $this->personnel_status = Language::get('PERSONNEL_STATUS');
         // เตรียมข้อมูลสำหรับใส่ลงในตาราง
-        $fields = array('id', 'name', 'active');
+        $fields = array('name', 'active');
         $headers = array(
             'name' => array(
-                'text' => '{LNG_Name} {LNG_Surname}',
+                'text' => '{LNG_Name}',
                 'sort' => 'name',
             ),
             'active' => array(
@@ -60,7 +62,7 @@ class View extends \Gcms\View
             'order' => array(
                 'class' => 'center',
             ),
-            'picture' => array(
+            'id' => array(
                 'class' => 'center',
             ),
             'active' => array(
@@ -68,24 +70,24 @@ class View extends \Gcms\View
             ),
         );
         $filters = array();
-        // หมวดหมู่ของบุคลากร
-        foreach (Language::get('PERSONNEL_CATEGORY') as $key => $label) {
-            $export[$key] = $request->request($key)->toInt();
-            $this->$key = \Index\Category\Model::init($key);
-            $fields[] = $key;
-            $filters[$key] = array(
-                'name' => $key,
-                'text' => $label,
-                'options' => array(0 => '{LNG_all items}') + $this->$key->toSelect(),
+        // หมวดหมู่
+        $this->category = \Index\Category\Model::init();
+        foreach ($this->category->typies() as $type) {
+            $export[$type] = $request->request($type)->toInt();
+            $fields[] = $type;
+            $filters[$type] = array(
+                'name' => $type,
+                'text' => $this->category->label($type),
+                'options' => array(0 => '{LNG_all items}') + $this->category->toSelect($type),
                 'default' => 0,
-                'value' => $export[$key],
+                'value' => $export[$type],
             );
-            $headers[$key] = array(
-                'text' => $label,
+            $headers[$type] = array(
+                'text' => $this->category->label($type),
                 'class' => 'center',
-                'sort' => $key,
+                'sort' => $type,
             );
-            $cols[$key] = array(
+            $cols[$type] = array(
                 'class' => 'center',
             );
         }
@@ -95,8 +97,8 @@ class View extends \Gcms\View
             'class' => 'center',
             'sort' => 'order',
         );
-        $fields[] = 'picture';
-        $headers['picture'] = array(
+        $fields[] = 'id';
+        $headers['id'] = array(
             'text' => '{LNG_Image}',
             'class' => 'center',
         );
@@ -124,8 +126,6 @@ class View extends \Gcms\View
             'sort' => $request->cookie('person_sort', 'id DESC')->toString(),
             /* ฟังก์ชั่นจัดรูปแบบการแสดงผลแถวของตาราง */
             'onRow' => array($this, 'onRow'),
-            /* คอลัมน์ที่ไม่ต้องแสดงผล */
-            'hideColumns' => array('id'),
             /* ตั้งค่าการกระทำของของตัวเลือกต่างๆ ด้านล่างตาราง ซึ่งจะใช้ร่วมกับการขีดถูกเลือกแถว */
             'action' => 'index.php/personnel/model/setup/action',
             'actionCallback' => 'dataTableActionCallback',
@@ -171,6 +171,7 @@ class View extends \Gcms\View
         // Javascript
         $table->script('initPerson("datatable");');
         // คืนค่า HTML
+
         return $table->render();
     }
 
@@ -183,15 +184,19 @@ class View extends \Gcms\View
      */
     public function onRow($item, $o, $prop)
     {
-        $item['position'] = $this->position->get($item['position']);
-        $item['department'] = $this->department->get($item['department']);
-        $thumb = is_file(ROOT_PATH.$item['picture']) ? WEB_URL.$item['picture'] : WEB_URL.'modules/personnel/img/noimage.jpg';
-        $item['picture'] = '<img src="'.$thumb.'" style="max-height:50px" alt=thumbnail>';
+        foreach ($this->category->typies() as $type) {
+            $item[$type] = $this->category->get($type, $item[$type]);
+        }
         $item['order'] = '<label><input type=number size=5 id=order_'.$item['id'].' value="'.$item['order'].'"></label>';
         if ($item['active'] == 0) {
             $item['active'] = '<a id=active_0_'.$item['id'].' class="icon-valid disabled" title="'.$this->personnel_status[0].'"></a>';
         } else {
             $item['active'] = '<a id=active_1_'.$item['id'].' class="icon-valid access" title="'.$this->personnel_status[1].'"></a>';
+        }
+        if (is_file(ROOT_PATH.DATA_FOLDER.'personnel/'.$item['id'].'.jpg')) {
+            $item['id'] = '<img src="'.WEB_URL.DATA_FOLDER.'personnel/'.$item['id'].'.jpg'.'" style="max-height:50px" alt=thumbnail>';
+        } else {
+            $item['id'] = '<img src="'.WEB_URL.'modules/personnel/img/noimage.jpg" style="max-height:50px" alt=thumbnail>';
         }
 
         return $item;

@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/models/settings.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Settings;
@@ -43,7 +43,9 @@ class Model extends \Kotchasan\KBase
                 $config->fax = $request->post('fax')->topic();
                 $config->address = $request->post('address')->topic();
                 $config->provinceID = $request->post('provinceID')->number();
+                $config->province = $request->post('province')->topic();
                 $config->zipcode = $request->post('zipcode')->number();
+                $config->country = $request->post('country')->filter('A-Z');
                 $config->student_w = max(100, $request->post('student_w')->toInt());
                 $config->student_h = max(100, $request->post('student_h')->toInt());
                 $config->teacher_status = $request->post('teacher_status')->toInt();

@@ -2,10 +2,10 @@
 /**
  * @filesource modules/personnel/controllers/setup.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace Personnel\Setup;
@@ -37,7 +37,7 @@ class Controller extends \Gcms\Controller
         // ข้อความ title bar
         $this->title = Language::trans('{LNG_List of} {LNG_Personnel}');
         // เลือกเมนู
-        $this->menu = 'module';
+        $this->menu = 'personnel';
         // Login
         if ($login = Login::isMember()) {
             if (Login::checkPermission($login, 'can_manage_personnel')) {
@@ -72,6 +72,7 @@ class Controller extends \Gcms\Controller
             return $section->render();
         }
         // 404
+
         return \Index\Error\Controller::execute($this);
     }
 }

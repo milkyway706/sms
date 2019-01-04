@@ -2,10 +2,10 @@
 /**
  * @filesource modules/edocument/views/received.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace Edocument\Received;
@@ -24,6 +24,9 @@ use Kotchasan\Text;
  */
 class View extends \Gcms\View
 {
+    /**
+     * @var mixed
+     */
     private $sender;
 
     /**

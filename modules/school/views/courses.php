@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/views/courses.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Courses;
@@ -27,7 +27,14 @@ class View extends \Gcms\View
      * ข้อมูลโมดูล.
      */
     private $teacher;
-    private $class;
+    /**
+     * @var mixed
+     */
+    private $category;
+    /**
+     * @var bool
+     */
+    private $canEdit;
 
     /**
      * ตารางรายชื่อนักเรียน ที่ลงทะเบียนเรียนแล้ว และผลการเรียน.
@@ -39,6 +46,8 @@ class View extends \Gcms\View
      */
     public function render(Request $request, $login)
     {
+        // สามารถแกไขรายวิชาได้
+        $this->canEdit = Login::checkPermission($login, array('can_manage_course', 'can_teacher'));
         // ค่าที่ส่งมา
         $class = $request->request('class')->toInt();
         $teacher = $request->request('teacher')->toInt();
@@ -46,7 +55,8 @@ class View extends \Gcms\View
         $term = $request->request('term', self::$cfg->term)->toInt();
         // โหลดตัวแปรต่างๆ
         $this->teacher = \School\Teacher\Model::init();
-        $this->class = \Index\Category\Model::init('class');
+        // หมวดหมู่ของนักเรียน
+        $this->category = \School\Category\Model::init();
         if (Login::checkPermission($login, 'can_manage_course')) {
             // สามารถจัดการรายวิชาทั้งหมดได้
             $can_manage_course = 0;
@@ -76,7 +86,7 @@ class View extends \Gcms\View
                 'name' => 'term',
                 'default' => 0,
                 'text' => '{LNG_Term}',
-                'options' => array(0 => '{LNG_all items}') + \Index\Category\Model::init('term')->toSelect(),
+                'options' => array(0 => '{LNG_all items}') + $this->category->toSelect('term'),
                 'value' => $term,
             ),
         );
@@ -85,7 +95,7 @@ class View extends \Gcms\View
                 'name' => 'class',
                 'default' => 0,
                 'text' => '{LNG_Class}',
-                'options' => array(0 => '{LNG_all items}') + $this->class->toSelect(),
+                'options' => array(0 => '{LNG_all items}') + $this->category->toSelect('class'),
                 'value' => $class,
             );
             $hideColumns = array('id', 'term');
@@ -207,6 +217,7 @@ class View extends \Gcms\View
         setcookie('courses_perPage', $table->perPage, time() + 3600 * 24 * 365, '/');
         setcookie('courses_Sort', $table->sort, time() + 3600 * 24 * 365, '/');
         // คืนค่า HTML
+
         return $table->render();
     }
 
@@ -225,7 +236,7 @@ class View extends \Gcms\View
             $item['year'] = $item['year'].'/'.$item['term'];
         }
         $item['period'] = empty($item['period']) ? '' : $item['period'];
-        $item['class'] = $this->class->get($item['class']);
+        $item['class'] = $this->category->get('class', $item['class']);
         $item['teacher_id'] = $this->teacher->get($item['teacher_id']);
 
         return $item;
@@ -242,10 +253,15 @@ class View extends \Gcms\View
      */
     public function onCreateButton($btn, $attributes, $items)
     {
-        if ($btn == 'grades' || $btn == 'register') {
+        if ($btn == 'grades') {
+            // ผู้เรียน
             return !empty($items['teacher_id']) || !empty($items['student']) ? $attributes : false;
+        } elseif ($btn == 'register') {
+            // ลงทะเบียนรายวิชา
+            return (!empty($items['teacher_id']) || !empty($items['student'])) && $this->canEdit ? $attributes : false;
         } else {
-            return $attributes;
+            // edit
+            return $this->canEdit ? $attributes : false;
         }
     }
 }

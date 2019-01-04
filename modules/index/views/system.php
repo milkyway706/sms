@@ -78,17 +78,47 @@ class View extends \Gcms\View
             'value' => isset($config->timezone) ? $config->timezone : self::$cfg->timezone,
         ));
         $fieldset = $form->add('fieldset', array(
+            'title' => '{LNG_User}',
+        ));
+        // user_forgot
+        $fieldset->add('select', array(
+            'id' => 'user_forgot',
+            'labelClass' => 'g-input icon-password',
+            'itemClass' => 'item',
+            'label' => '{LNG_Forgot}',
+            'options' => Language::get('BOOLEANS'),
+            'value' => isset($config->user_forgot) ? $config->user_forgot : 1,
+        ));
+        // user_register
+        $fieldset->add('select', array(
+            'id' => 'user_register',
+            'labelClass' => 'g-input icon-register',
+            'itemClass' => 'item',
+            'label' => '{LNG_Register}',
+            'options' => Language::get('BOOLEANS'),
+            'value' => isset($config->user_register) ? $config->user_register : 1,
+        ));
+        // welcome_email
+        $fieldset->add('select', array(
+            'id' => 'welcome_email',
+            'labelClass' => 'g-input icon-email',
+            'itemClass' => 'item',
+            'label' => '{LNG_Send a welcome email to new members}',
+            'options' => Language::get('BOOLEANS'),
+            'value' => isset($config->welcome_email) ? $config->welcome_email : 0,
+        ));
+        $fieldset = $form->add('fieldset', array(
             'title' => '{LNG_Style}',
         ));
         // bg_image
         if (is_file(ROOT_PATH.DATA_FOLDER.'bg_image.png')) {
-            $img = WEB_URL.DATA_FOLDER.'bg_image.png';
+            $img = WEB_URL.DATA_FOLDER.'bg_image.png?'.time();
         } else {
             $img = WEB_URL.'skin/img/blank.gif';
         }
         // bg_image
         $fieldset->add('file', array(
-            'id' => 'bg_image',
+            'id' => 'file_bg_image',
             'labelClass' => 'g-input icon-image',
             'itemClass' => 'item',
             'label' => '{LNG_Background image}',
@@ -106,13 +136,13 @@ class View extends \Gcms\View
         ));
         // logo
         if (is_file(ROOT_PATH.DATA_FOLDER.'logo.png')) {
-            $img = WEB_URL.DATA_FOLDER.'logo.png';
+            $img = WEB_URL.DATA_FOLDER.'logo.png?'.time();
         } else {
             $img = WEB_URL.'skin/img/blank.gif';
         }
         // logo
         $fieldset->add('file', array(
-            'id' => 'logo',
+            'id' => 'file_logo',
             'labelClass' => 'g-input icon-image',
             'itemClass' => 'item',
             'label' => '{LNG_Logo}',

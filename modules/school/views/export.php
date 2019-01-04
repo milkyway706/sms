@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/views/export.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Export;
@@ -46,6 +46,7 @@ class View extends \Gcms\View
             }
             $content .= '</tr>';
         }
+        $category = \School\Category\Model::init();
         // template
         $template = Template::createFromFile(ROOT_PATH.'modules/school/views/mygrade.html');
         $template->add(array(
@@ -55,8 +56,8 @@ class View extends \Gcms\View
             '/%NAME%/' => $student->name,
             '/%NUMBER%/' => $student->number,
             '/%DEPARTMENT%/' => $student->department,
-            '/%CLASS%/' => \Index\Category\Model::init('class')->get($student->class),
-            '/%ROOM%/' => \Index\Category\Model::init('room')->get($student->room),
+            '/%CLASS%/' => $category->get('class', $student->class),
+            '/%ROOM%/' => $category->get('room', $student->room),
             '/%YEAR%/' => $student->year,
             '/%TERM%/' => $student->term,
             '/%SCHOOLNAME%/' => self::$cfg->school_name,

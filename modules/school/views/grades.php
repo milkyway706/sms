@@ -2,14 +2,15 @@
 /**
  * @filesource modules/school/views/grades.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Grades;
 
+use Gcms\Login;
 use Kotchasan\DataTable;
 use Kotchasan\Http\Request;
 use Kotchasan\Language;
@@ -24,10 +25,21 @@ use Kotchasan\Language;
 class View extends \Gcms\View
 {
     /**
-     * ข้อมูลโมดูล.
+     * @var string
      */
     private $room;
+    /**
+     * @var string
+     */
     private $grade;
+    /**
+     * @var mixed
+     */
+    private $canManage;
+    /**
+     * @var mixed
+     */
+    private $category;
 
     /**
      * ตารางรายชื่อนักเรียน.
@@ -37,8 +49,9 @@ class View extends \Gcms\View
      *
      * @return string
      */
-    public function render(Request $request, $course)
+    public function render(Request $request, $course, $login)
     {
+        $this->canManage = Login::checkPermission($login, array('can_manage_course', 'can_teacher'));
         // ค่าที่ส่งมา
         $room = $request->request('room')->toInt();
         // โหลดตัวแปรต่างๆ
@@ -46,7 +59,8 @@ class View extends \Gcms\View
         foreach (Language::get('SCHOOL_GRADES') as $k => $v) {
             $this->grade .= '<option value="'.$k.'">'.$v.'</option>';
         }
-        $rooms = \Index\Category\Model::init('room')->toSelect();
+        $this->category = \School\Category\Model::init();
+        $rooms = $this->category->toSelect('room');
         $this->room = '<option value=""></option>';
         foreach ($rooms as $k => $v) {
             $this->room .= '<option value="'.$k.'">'.$v.'</option>';
@@ -74,14 +88,6 @@ class View extends \Gcms\View
             'actionCallback' => 'dataTableActionCallback',
             'actions' => array(
                 array(
-                    'id' => 'action',
-                    'class' => 'ok',
-                    'text' => '{LNG_With selected}',
-                    'options' => array(
-                        'delete' => '{LNG_Delete}',
-                    ),
-                ),
-                array(
                     'class' => 'button orange icon-excel',
                     'id' => 'export&subject='.$course->id.'&room='.$room,
                     'text' => '{LNG_Download} {LNG_Grade}',
@@ -106,7 +112,7 @@ class View extends \Gcms\View
                     'text' => '{LNG_Student ID}',
                 ),
                 'name' => array(
-                    'text' => '{LNG_Name} {LNG_Surname}',
+                    'text' => '{LNG_Name}',
                 ),
                 'room' => array(
                     'text' => '{LNG_Room}',
@@ -127,11 +133,22 @@ class View extends \Gcms\View
                 ),
             ),
         ));
+        if ($this->canManage) {
+            $table->actions[] = array(
+                'id' => 'action',
+                'class' => 'ok',
+                'text' => '{LNG_With selected}',
+                'options' => array(
+                    'delete' => '{LNG_Delete}',
+                ),
+            );
+        }
         // save cookie
         setcookie('grades_perPage', $table->perPage, time() + 3600 * 24 * 365, '/');
         // Javascript
         $table->script('initSchool("grades", "grade|number|room");');
         // คืนค่า HTML
+
         return $table->render();
     }
 
@@ -146,8 +163,12 @@ class View extends \Gcms\View
     {
         $item['name'] = '<a id=view_'.$item['student'].'>'.$item['name'].'</a>';
         $item['grade'] = '<label><select id=grade_'.$item['id'].'>'.str_replace('value="'.$item['grade'].'"', 'value="'.$item['grade'].'" selected', $this->grade).'</select></label>';
-        $item['room'] = '<label><select id=room_'.$item['id'].'>'.str_replace('value="'.$item['room'].'"', 'value="'.$item['room'].'" selected', $this->room).'</select></label>';
-        $item['number'] = '<label><input type=text size=5 id=number_'.$item['id'].' value="'.$item['number'].'"></label>';
+        if ($this->canManage) {
+            $item['room'] = '<label><select id=room_'.$item['id'].'>'.str_replace('value="'.$item['room'].'"', 'value="'.$item['room'].'" selected', $this->room).'</select></label>';
+            $item['number'] = '<label><input type=text size=5 id=number_'.$item['id'].' value="'.$item['number'].'"></label>';
+        } else {
+            $item['room'] = $this->category->get('room', $item['room']);
+        }
 
         return $item;
     }

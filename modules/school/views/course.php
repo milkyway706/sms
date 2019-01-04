@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/views/course.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Course;
@@ -94,13 +94,15 @@ class View extends \Gcms\View
             'options' => Language::get('COURSE_TYPIES'),
             'value' => $course->type,
         ));
+        // หมวดหมู่ของนักเรียน
+        $category = \School\Category\Model::init();
         // class
         $groups->add('select', array(
             'id' => 'class',
             'labelClass' => 'g-input icon-office',
             'itemClass' => 'width50',
             'label' => '{LNG_Class}',
-            'options' => \Index\Category\Model::init('class')->toSelect(),
+            'options' => $category->toSelect('class'),
             'value' => $course->class,
         ));
         // สามารถจัดการรายวิชาทั้งหมดได้
@@ -126,13 +128,14 @@ class View extends \Gcms\View
             'maxlength' => 4,
             'value' => $course->year,
         ));
+
         // term
         $groups->add('select', array(
             'id' => 'term',
             'labelClass' => 'g-input icon-category',
             'itemClass' => 'width50',
             'label' => '{LNG_Term}',
-            'options' => \Index\Category\Model::init('term')->toSelect(),
+            'options' => $category->toSelect('term'),
             'value' => $course->term,
         ));
         $fieldset = $form->add('fieldset', array(

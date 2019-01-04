@@ -2,10 +2,10 @@
 /**
  * @filesource modules/personnel/views/write.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace Personnel\Write;
@@ -50,7 +50,7 @@ class View extends \Gcms\View
             'id' => 'personnel_name',
             'labelClass' => 'g-input icon-profile',
             'itemClass' => 'width50',
-            'label' => '{LNG_Name} {LNG_Surname}',
+            'label' => '{LNG_Name}',
             'maxlength' => 100,
             'value' => $index->name,
         ));
@@ -95,13 +95,15 @@ class View extends \Gcms\View
             'placeholder' => '{LNG_Order of persons in positions}',
             'value' => $index->order,
         ));
-        foreach (Language::get('PERSONNEL_CATEGORY') as $type => $label) {
+        // category
+        $category = \Index\Category\Model::init();
+        foreach ($category->typies() as $type) {
             $fieldset->add('select', array(
                 'id' => 'personnel_'.$type,
-                'labelClass' => 'g-input icon-'.$type,
-                'label' => $label,
+                'labelClass' => 'g-input icon-category',
+                'label' => $category->label($type),
                 'itemClass' => 'item',
-                'options' => array(0 => '{LNG_please select}') + \Index\Category\Model::init($type)->toSelect(),
+                'options' => array(0 => '{LNG_please select}') + $category->toSelect($type),
                 'value' => isset($index->$type) ? $index->$type : 0,
             ));
         }
@@ -109,15 +111,15 @@ class View extends \Gcms\View
         foreach (Language::find('PERSONNEL_DETAILS', array()) as $type => $label) {
             $fieldset->add('text', array(
                 'id' => 'personnel_'.$type,
-                'labelClass' => 'g-input icon-'.$type,
+                'labelClass' => 'g-input icon-edit',
                 'itemClass' => 'item',
                 'label' => $label,
                 'value' => isset($index->custom[$type]) ? $index->custom[$type] : '',
             ));
         }
-        // picture
-        if (!empty($index->picture) && is_file(ROOT_PATH.$index->picture)) {
-            $img = WEB_URL.$index->picture;
+        // personnel picture
+        if (is_file(ROOT_PATH.DATA_FOLDER.'personnel/'.$index->id.'.jpg')) {
+            $img = WEB_URL.DATA_FOLDER.'personnel/'.$index->id.'.jpg';
         } else {
             $img = WEB_URL.'modules/personnel/img/noimage.jpg';
         }

@@ -2,10 +2,10 @@
 /**
  * @filesource modules/personnel/models/download.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace Personnel\Download;
@@ -36,7 +36,7 @@ class Model extends \Kotchasan\Model
         }
         $select = array('U.name', 'P.id_card', 'U.phone', 'P.custom');
         // หมวดหมู่ของบุคลากร
-        foreach (Language::get('PERSONNEL_CATEGORY') as $k => $v) {
+        foreach (Language::get('CATEGORIES') as $k => $v) {
             if (!empty($params[$k])) {
                 $where[] = array("P.{$k}", $params[$k]);
             }

@@ -2,10 +2,10 @@
 /**
  * @filesource modules/personnel/controllers/export.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace Personnel\Export;
@@ -31,7 +31,7 @@ class Controller extends \Kotchasan\Controller
     public function execute(Request $request)
     {
         $header = array();
-        $header[] = Language::trans('{LNG_Name} {LNG_Surname} *');
+        $header[] = Language::trans('{LNG_Name} *');
         $header[] = Language::trans('{LNG_Identification number} **');
         $header[] = Language::get('Birthday');
         $header[] = Language::get('Phone');
@@ -41,7 +41,7 @@ class Controller extends \Kotchasan\Controller
             array('นางสมศรี รักงานดี', '', $birthday, ''),
         );
         // หมวดหมู่ของบุคลากร
-        foreach (Language::get('PERSONNEL_CATEGORY') as $key => $label) {
+        foreach (Language::get('CATEGORIES') as $key => $label) {
             $header[] = $label;
             $person[0][] = 1;
             $person[1][] = 1;

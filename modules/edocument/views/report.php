@@ -2,10 +2,10 @@
 /**
  * @filesource modules/edocument/views/report.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace Edocument\Report;
@@ -55,7 +55,7 @@ class View extends \Gcms\View
                     'text' => '{LNG_Recipient}',
                 ),
                 'name' => array(
-                    'text' => '{LNG_Name} {LNG_Surname}',
+                    'text' => '{LNG_Name}',
                 ),
                 'last_update' => array(
                     'text' => '{LNG_date}',

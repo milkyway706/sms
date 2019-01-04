@@ -2,10 +2,10 @@
 /**
  * @filesource modules/personnel/models/setup.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace Personnel\Setup;
@@ -49,16 +49,16 @@ class Model extends \Kotchasan\Model
                         // ลบ
                         $ids = array();
                         $query = $model->db()->createQuery()
-                            ->select('id', 'picture')
+                            ->select('id')
                             ->from('user')
                             ->where(array('id', $match[1]))
                             ->toArray();
                         foreach ($query->execute() as $item) {
                             if ($item['id'] != 1) {
                                 $ids[] = $item['id'];
-                                if (is_file(ROOT_PATH.$item['picture'])) {
+                                if (is_file(ROOT_PATH.DATA_FOLDER.'personnel/'.$item['id'].'.jpg')) {
                                     // ลบไฟล์
-                                    unlink(ROOT_PATH.$item['picture']);
+                                    unlink(ROOT_PATH.DATA_FOLDER.'personnel/'.$item['id'].'.jpg');
                                 }
                             }
                         }
@@ -77,7 +77,7 @@ class Model extends \Kotchasan\Model
                             ));
                             // ป้องกันการแจ้งเตือน
                             $ret['edit'] = true;
-                        } elseif (preg_match('/^active_([0-9]+)$/', $action, $match)) {
+                        } elseif (preg_match('/^active_([01])$/', $action, $match)) {
                             // update active
                             $table = $model->getTableName('user');
                             $search = $model->db()->first($table, $id);

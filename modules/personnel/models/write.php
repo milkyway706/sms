@@ -2,10 +2,10 @@
 /**
  * @filesource modules/personnel/models/write.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace Personnel\Write;
@@ -40,7 +40,7 @@ class Model extends \Kotchasan\Model
                 // ไม่พบรายการที่แก้ไข
                 $ret['alert'] = Language::get('Sorry, Item not found It&#39;s may be deleted');
             } else {
-                // ครู-อาจารย์, สามารถจัดการนักเรียนได้
+                // สามารถจัดการบุคลากรได้
                 if (!Login::checkPermission($login, 'can_manage_personnel')) {
                     // ตัวเอง
                     $login = $login['id'] == $index->id ? $login : false;
@@ -57,7 +57,7 @@ class Model extends \Kotchasan\Model
                         'order' => $request->post('personnel_order')->toInt(),
                     );
                     $urls = array();
-                    foreach (Language::get('PERSONNEL_CATEGORY') as $key => $label) {
+                    foreach (Language::get('CATEGORIES') as $key => $label) {
                         $personnel[$key] = $request->post('personnel_'.$key)->toInt();
                         $urls[$key] = $personnel[$key];
                     }
@@ -96,20 +96,17 @@ class Model extends \Kotchasan\Model
                             // id ของบุคลากรจาก DB
                             $personnel['id'] = $index->id;
                         }
+                        $dir = ROOT_PATH.DATA_FOLDER.'personnel/';
                         // อัปโหลดรูปภาพพร้อมปรับขนาด
                         foreach ($request->getUploadedFiles() as $item => $file) {
                             /* @var $file UploadedFile */
                             if ($file->hasUploadFile()) {
-                                if (!File::makeDirectory(ROOT_PATH.DATA_FOLDER.'personnel/')) {
+                                if (!File::makeDirectory($dir)) {
                                     // ไดเรคทอรี่ไม่สามารถสร้างได้
                                     $ret['ret_'.$item] = sprintf(Language::get('Directory %s cannot be created or is read-only.'), DATA_FOLDER.'personnel/');
-                                } elseif (!$file->validFileExt(array('jpg', 'jpeg', 'png'))) {
-                                    // ชนิดของไฟล์ไม่ถูกต้อง
-                                    $ret['ret_'.$item] = Language::get('The type of file is invalid');
                                 } elseif ($item == 'personnel_picture') {
-                                    $picture = DATA_FOLDER.'personnel/'.$personnel['id'].'.'.$file->getClientFileExt();
                                     try {
-                                        $file->cropImage(array('jpg', 'jpeg', 'png'), ROOT_PATH.$picture, self::$cfg->personnel_w, self::$cfg->personnel_h);
+                                        $file->cropImage(array('jpg', 'jpeg', 'png'), $dir.$personnel['id'].'.jpg', self::$cfg->personnel_w, self::$cfg->personnel_h);
                                     } catch (\Exception $exc) {
                                         // ไม่สามารถอัปโหลดได้
                                         $ret['ret_'.$item] = Language::get($exc->getMessage());
@@ -124,9 +121,6 @@ class Model extends \Kotchasan\Model
                             $personnel['custom'] = empty($personnel['custom']) ? '' : serialize($personnel['custom']);
                             if ($index->id > 0) {
                                 // แก้ไข
-                                if (isset($picture)) {
-                                    $user['picture'] = $picture;
-                                }
                                 if ($updatepassword && isset($user['password']) && isset($user['username'])) {
                                     $user['password'] = sha1($user['password'].$user['username']);
                                 }
@@ -136,11 +130,6 @@ class Model extends \Kotchasan\Model
                                 $this->db()->update($this->getTableName('personnel'), $index->id, $personnel);
                             } else {
                                 // ใหม่
-                                if (isset($picture)) {
-                                    // update user picture
-                                    $this->db()->update($this->getTableName('user'), $personnel['id'], array('picture' => $picture));
-                                }
-                                // insert personnel
                                 $this->db()->insertOrUpdate($this->getTableName('personnel'), $personnel);
                             }
                             // ส่งค่ากลับ

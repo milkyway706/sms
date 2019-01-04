@@ -211,13 +211,17 @@ window.$K = (function() {
                 elem.style.height = "100%";
                 elem.style.width = "100%";
                 elem.addEvent("change", function() {
-                  display.value = this.value;
                   if (this.files) {
+                    display.value = this.value;
+                    display.callEvent("change", {
+                      value: this.value,
+                      files: this.files
+                    });
                     var preview = $E(this.get("data-preview"));
                     if (preview) {
-                      var input = this;
-                      var max = floatval(this.get("data-max"));
-                      forEach(this.files, function() {
+                      var input = this,
+                        max = floatval(input.get("data-max"));
+                      forEach(input.files, function() {
                         if (max > 0 && this.size > max) {
                           input.invalid(input.title);
                         } else if (window.FileReader) {
@@ -2598,9 +2602,9 @@ window.$K = (function() {
       function _mousedown(e) {
         var delay;
         var temp = this;
-        function _cancleClick(e) {
+        function _cancelClick(e) {
           window.clearTimeout(delay);
-          this.removeEvent("mouseup", _cancleClick);
+          this.removeEvent("mouseup", _cancelClick);
         }
         if (GEvent.isLeftClick(e)) {
           GEvent.stop(e);
@@ -2615,7 +2619,7 @@ window.$K = (function() {
             document.addEvent("dragstart", _dragstart);
             self.options.beginDrag.call(self);
           }, 100);
-          temp.addEvent("mouseup", _cancleClick);
+          temp.addEvent("mouseup", _cancelClick);
         }
       }
       this.src.addEvent("mousedown", _mousedown);
@@ -3208,6 +3212,7 @@ window.$K = (function() {
       this.placeholder.style.position = "absolute";
       this.input.appendChild(this.placeholder);
       this.display = document.createElement("div");
+      this.display.id = this.hidden.id + "_display";
       this.input.appendChild(this.display);
       this.input.tabIndex = 0;
       this.input.style.cursor = "pointer";

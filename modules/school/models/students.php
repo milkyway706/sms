@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/models/students.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Students;
@@ -32,9 +32,7 @@ class Model extends \Kotchasan\Model
      */
     public static function toDataTable()
     {
-        $model = new static();
-
-        return $model->db()->createQuery()
+        return static::createQuery()
             ->select('S.*', 'U.name', 'U.phone', 'U.active')
             ->from('student S')
             ->join('user U', 'INNER', array('U.id', 'S.id'));
@@ -79,18 +77,17 @@ class Model extends \Kotchasan\Model
     {
         $ret = array();
         // session, referer, member
-        if ($request->initSession() && $request->isReferer() && $login = Login::isTeacher('can_manage_student')) {
+        if ($request->initSession() && $request->isReferer() && $login = Login::isMember()) {
             if ($login['active'] == 1) {
+                $canManage = Login::checkPermission($login, array('can_manage_student', 'can_manage_course', 'can_teacher'));
                 // รับค่าจากการ POST
                 $action = $request->post('action')->toString();
                 if (preg_match_all('/,?([0-9]+),?/', $request->post('id')->toString(), $match)) {
-                    // Model
-                    $model = new \Kotchasan\Model();
-                    if ($action === 'delete') {
+                    if ($action === 'delete' && $canManage) {
                         // ลบ
                         $ids = array();
-                        $query = $model->db()->createQuery()
-                            ->select('U.id', 'U.picture')
+                        $query = $this->db()->createQuery()
+                            ->select('U.id')
                             ->from('user U')
                             ->where(array('id', $match[1]))
                             ->notExists('grade', array('student_id', 'U.id'))
@@ -98,27 +95,30 @@ class Model extends \Kotchasan\Model
                         foreach ($query->execute() as $item) {
                             if ($item['id'] != 1) {
                                 $ids[] = $item['id'];
-                                if (is_file(ROOT_PATH.$item['picture'])) {
+                                if (is_file(ROOT_PATH.DATA_FOLDER.'school/'.$item['id'].'.jpg')) {
                                     // ลบไฟล์
-                                    unlink(ROOT_PATH.$item['picture']);
+                                    unlink(ROOT_PATH.DATA_FOLDER.'school/'.$item['id'].'.jpg');
                                 }
                             }
                         }
-                        // ลบข้อมูล
-                        $model->db()->createQuery()->delete('student', array('id', $ids))->execute();
-                        $model->db()->createQuery()->delete('user', array('id', $ids))->execute();
+                        if (!empty($ids)) {
+                            // ลบข้อมูล
+                            $this->db()->createQuery()->delete('student', array('id', $ids))->execute();
+                            $this->db()->createQuery()->delete('grade', array('student_id', $ids))->execute();
+                            $this->db()->createQuery()->delete('user', array('id', $ids))->execute();
+                        }
                         // reload
                         $ret['location'] = 'reload';
-                    } elseif ($action === 'number') {
+                    } elseif ($action === 'number' && $canManage) {
                         // อัปเดทเลขที่
                         $value = $request->post('value')->toInt();
                         $id = (int) $match[1][0];
-                        $model->db()->update($model->getTableName('student'), $id, array('number' => $value));
+                        $this->db()->update($this->getTableName('student'), $id, array('number' => $value));
                         // คืนค่า
                         $ret['number_'.$id] = $value;
-                    } elseif (preg_match('/^(room|class|department)_([0-9]+)$/', $action, $match2)) {
+                    } elseif ($canManage && preg_match('/^(room|class|department)_([0-9]+)$/', $action, $match2)) {
                         // ห้อง, ชั้น, แผนก
-                        $model->db()->update($model->getTableName('student'), array(
+                        $this->db()->update($this->getTableName('student'), array(
                             array('id', $match[1]),
                             array('id', '!=', '1'),
                         ), array(
@@ -126,9 +126,9 @@ class Model extends \Kotchasan\Model
                         ));
                         // reload
                         $ret['location'] = 'reload';
-                    } elseif ($action == 'graduate' || $action == 'studying') {
+                    } elseif ($canManage && ($action == 'graduate' || $action == 'studying')) {
                         // จบการศึกษา, กำลังเรียน
-                        $model->db()->update($model->getTableName('user'), array(
+                        $this->db()->update($this->getTableName('user'), array(
                             array('id', $match[1]),
                             array('status', self::$cfg->student_status),
                         ), array(

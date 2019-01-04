@@ -2,10 +2,10 @@
 /**
  * @filesource modules/personnel/models/user.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace Personnel\User;
@@ -20,28 +20,14 @@ namespace Personnel\User;
 class Model extends \Kotchasan\Model
 {
     /**
-     * Query ข้อมูลบุคลากรสำหรับส่งให้กับ DataTable.
+     * Query ข้อมูลสำหรับส่งให้กับ DataTable.
      *
-     * @param array $login
-     *
-     * @return /static
+     * @return \Kotchasan\Database\QueryBuilder
      */
     public static function toDataTable()
     {
-        $model = new static();
-
-        return $model->query();
-    }
-
-    /**
-     * query ข้อมูลบุคลากร.
-     *
-     * @return QueryBuilder
-     */
-    private function query()
-    {
-        return $this->db()->createQuery()
-            ->select('P.*', 'U.name', 'U.picture', 'U.active')
+        return static::createQuery()
+            ->select('P.*', 'U.name', 'U.active')
             ->from('personnel P')
             ->join('user U', 'INNER', array('U.id', 'P.id'));
     }
@@ -55,17 +41,17 @@ class Model extends \Kotchasan\Model
      */
     public static function get($id)
     {
-        $model = new static();
-
-        return $model->query()
+        return static::createQuery()
+            ->from('personnel P')
+            ->join('user U', 'INNER', array('U.id', 'P.id'))
             ->where(array('P.id', $id))
-            ->first('P.*', 'U.name', 'U.birthday', 'U.phone', 'U.sex', 'U.picture', 'U.permission');
+            ->first('P.*', 'U.name', 'U.birthday', 'U.phone', 'U.sex', 'U.permission');
     }
 
     /**
      * อ่านข้อมูลรายการที่เลือกสำหรับหน้า write.php.
      *
-     * @param int $id 0 หมายถึงรายการใหม่, > 0 รายการที่ต้องการ
+     * @param int $id หมายถึงรายการใหม่, > รายการที่ต้องการ
      *
      * @return object|null คืนค่าข้อมูล object ไม่พบคืนค่า null
      */
@@ -82,10 +68,11 @@ class Model extends \Kotchasan\Model
                 'birthday' => '',
             );
         } else {
-            $model = new static();
-            $search = $model->query()
+            $search = static::createQuery()
+                ->from('personnel P')
+                ->join('user U', 'INNER', array('U.id', 'P.id'))
                 ->where(array('P.id', $id))
-                ->first('P.*', 'U.name', 'U.birthday', 'U.phone', 'U.sex', 'U.picture', 'U.permission');
+                ->first('P.*', 'U.name', 'U.birthday', 'U.phone', 'U.sex', 'U.permission');
             if ($search) {
                 $search->custom = @unserialize($search->custom);
                 if (!is_array($search->custom)) {
@@ -111,8 +98,7 @@ class Model extends \Kotchasan\Model
             // ไม่มีข้อมูลต้องตรวจสอบ
             return false;
         } else {
-            $model = new static();
-            $search = $model->db()->createQuery()
+            $search = static::createQuery()
                 ->from('personnel')
                 ->where(array('id_card', $personnel['id_card']))
                 ->toArray()

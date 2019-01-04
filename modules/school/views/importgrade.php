@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/views/importgrade.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Importgrade;
@@ -65,13 +65,15 @@ class View extends \Gcms\View
             'options' => \School\Course\Model::init($can_manage_course)->toSelect(),
             'value' => $request->request('course')->topic(),
         ));
+        // หมวดหมู่ของนักเรียน
+        $category = \School\Category\Model::init();
         // room
         $groups->add('select', array(
             'id' => 'room',
             'labelClass' => 'g-input icon-group',
             'itemClass' => 'width50',
             'label' => '{LNG_Room}',
-            'options' => \Index\Category\Model::init('room')->toSelect(),
+            'options' => $category->toSelect('room'),
             'value' => $request->request('room')->toInt(),
         ));
         $groups = $fieldset->add('groups');
@@ -92,7 +94,7 @@ class View extends \Gcms\View
             'labelClass' => 'g-input icon-category',
             'itemClass' => 'width50',
             'label' => '{LNG_Term}',
-            'options' => \Index\Category\Model::init('term')->toSelect(),
+            'options' => $category->toSelect('term'),
             'value' => $request->request('term', self::$cfg->term)->toInt(),
         ));
         // import
@@ -128,6 +130,7 @@ class View extends \Gcms\View
         // Javascript
         $form->script('initSchoolImportgrade();');
         // คืนค่า HTML Form
+
         return $form->render();
     }
 }

@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/models/courses.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Courses;
@@ -49,9 +49,9 @@ class Model extends \Kotchasan\Model
     public function action(Request $request)
     {
         $ret = array();
-        // session, referer, admin
-        if ($request->initSession() && $request->isReferer() && $login = Login::isTeacher('can_mange_course')) {
-            if ($login['active'] == 1) {
+        // session, referer, สามารถจัดการรายวิชาได้
+        if ($request->initSession() && $request->isReferer() && $login = Login::isMember()) {
+            if ($login['active'] == 1 && Login::checkPermission($login, array('can_manage_course', 'can_teacher'))) {
                 // รับค่าจากการ POST
                 $action = $request->post('action')->toString();
                 // id ที่ส่งมา

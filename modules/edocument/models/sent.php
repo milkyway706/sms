@@ -2,10 +2,10 @@
 /**
  * @filesource modules/edocument/models/sent.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace Edocument\Sent;
@@ -27,7 +27,7 @@ class Model extends \Kotchasan\Model
     /**
      * Query ข้อมูลสำหรับส่งให้กับ DataTable.
      *
-     * @param int $id 0 คืนค่าทุกคน, > 0 คืนค่ารายการที่ $id
+     * @param int $id คืนค่าทุกคน, > คืนค่ารายการที่ $id
      *
      * @return /static
      */
@@ -106,6 +106,7 @@ class Model extends \Kotchasan\Model
                                 $_SESSION[$id] = array(
                                     'file' => $file,
                                     'name' => $result->topic.'.'.$result->ext,
+                                    'mime' => \Kotchasan\Mime::get($result->ext),
                                 );
                                 // คืนค่า
                                 $ret['location'] = WEB_URL.'modules/edocument/filedownload.php?id='.$id;

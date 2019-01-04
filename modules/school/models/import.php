@@ -2,17 +2,17 @@
 /**
  * @filesource modules/school/models/import.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Import;
 
 use Gcms\Login;
-use Kotchasan\Language;
 use Kotchasan\Http\Request;
+use Kotchasan\Language;
 use Kotchasan\Text;
 
 /**
@@ -24,8 +24,17 @@ use Kotchasan\Text;
  */
 class Model extends \Kotchasan\Model
 {
+    /**
+     * @var int
+     */
     private $row = 0;
+    /**
+     * @var array
+     */
     private $params = array();
+    /**
+     * @var mixed
+     */
     private $login;
 
     /**
@@ -50,7 +59,7 @@ class Model extends \Kotchasan\Model
                             $ret['ret_'.$item] = Language::get('The type of file is invalid');
                         } else {
                             // import data from CSV
-                            if ($type == 'student' && Login::isTeacher('can_manage_student')) {
+                            if ($type == 'student' && Login::checkPermission($this->login, 'can_manage_student')) {
                                 // หมวดหมู่ของนักเรียน
                                 $this->categories = array();
                                 foreach (Language::get('SCHOOL_CATEGORY') as $key => $label) {
@@ -62,13 +71,13 @@ class Model extends \Kotchasan\Model
                                 // ส่งค่ากลับ
                                 $ret['location'] = $request->getUri()->postBack('index.php', array('module' => 'school-students', 'id' => 0));
                                 $ret['alert'] = Language::replace('Successfully imported :count items', array(':count' => $this->row));
-                            } elseif ($type == 'grade' && Login::isTeacher('can_manage_student')) {
+                            } elseif ($type == 'grade' && Login::checkPermission($this->login, array('can_teacher', 'can_manage_course', 'can_rate_student'))) {
                                 // import ข้อมูล
                                 \Kotchasan\Csv::read($file->getTempFileName(), array($this, 'importGrade'));
                                 // ส่งค่ากลับ
                                 $ret['location'] = $request->getUri()->postBack('index.php', array('module' => 'school-courses', 'id' => 0));
                                 $ret['alert'] = Language::replace('Successfully imported :count items', array(':count' => $this->row));
-                            } elseif ($type == 'course' && Login::isTeacher()) {
+                            } elseif ($type == 'course' && Login::checkPermission($this->login, array('can_teacher', 'can_manage_student'))) {
                                 // import ข้อมูล
                                 \Kotchasan\Csv::read($file->getTempFileName(), array($this, 'importCourse'));
                                 // ส่งค่ากลับ

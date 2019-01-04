@@ -2,10 +2,10 @@
 /**
  * @filesource modules/edocument/views/write.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace Edocument\Write;
@@ -107,7 +107,7 @@ class View extends \Gcms\View
         ));
         $fieldset->add('checkbox', array(
             'id' => 'send_mail',
-            'label' => '{LNG_Send an email to members}',
+            'label' => '&nbsp;{LNG_Send a notification message to the person concerned}',
             'checked' => self::$cfg->edocument_send_mail && $index->id == 0,
             'value' => 1,
         ));

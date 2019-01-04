@@ -29,12 +29,18 @@ if (defined('ROOT_PATH')) {
     }
     if (!$error) {
         // เชื่อมต่อฐานข้อมูลสำเร็จ
-        $content[] = array('<li class="correct">เชื่อมต่อฐานข้อมูลสำเร็จ</li>');
+        $content = array('<li class="correct">เชื่อมต่อฐานข้อมูลสำเร็จ</li>');
         try {
             // ตาราง user
             $table = $db_config['prefix'].'_user';
             if (!fieldExists($conn, $table, 'social')) {
                 $conn->query("ALTER TABLE `$table` CHANGE `fb` `social` TINYINT(1) NOT NULL DEFAULT '0'");
+            }
+            if (!fieldExists($conn, $table, 'country')) {
+                $conn->query("ALTER TABLE `$table` ADD `country` VARCHAR(2)");
+            }
+            if (!fieldExists($conn, $table, 'province')) {
+                $conn->query("ALTER TABLE `$table` ADD `province` VARCHAR(50)");
             }
             if (!fieldExists($conn, $table, 'token')) {
                 $conn->query("ALTER TABLE `$table` ADD `token` VARCHAR(50) NULL AFTER `password`");

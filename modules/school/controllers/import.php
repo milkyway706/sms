@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/controllers/import.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Import;
@@ -33,6 +33,8 @@ class Controller extends \Gcms\Controller
      */
     public function render(Request $request)
     {
+        // สมาชิก
+        $login = Login::isMember();
         // ข้อความ title bar
         $this->title = Language::get('Import').' ';
         switch ($request->request('type')->toString()) {
@@ -40,26 +42,26 @@ class Controller extends \Gcms\Controller
                 $className = 'School\Importstudent\View';
                 $this->title .= Language::get('Student list');
                 $breadcrumb = '<li><a href="{BACKURL?module=school-students&id=0}">{LNG_Student}</a></li>';
-                // ครู-อาจาร์ย, สามารถจัดการรายชื่อนักเรียนได้
-                $login = Login::isTeacher('can_manage_student');
+                // สามารถจัดการรายชื่อนักเรียนได้
+                $login = Login::checkPermission($login, 'can_manage_student');
                 break;
             case 'grade':
                 $className = 'School\Importgrade\View';
                 $this->title .= Language::get('Grade');
                 $breadcrumb = '<li><a href="{BACKURL?module=school-students&id=0}">{LNG_Student}</a></li>';
-                // ครู-อาจาร์ย, สามารถจัดการรายชื่อนักเรียนได้
-                $login = Login::isTeacher('can_manage_student');
+                // ครู-อาจาร์ย, สามารถจัดการรายวิชาได้, ให้คะแนนได้
+                $login = Login::checkPermission($login, array('can_teacher', 'can_manage_course', 'can_rate_student'));
                 break;
             case 'course':
                 $className = 'School\Importcourse\View';
                 $this->title .= Language::get('Course');
                 $breadcrumb = '<li><a href="{BACKURL?module=school-courses&id=0}">{LNG_Course}</a></li>';
                 // ครู-อาจาร์ย, สามารถจัดการรายชื่อนักเรียนได้
-                $login = Login::isTeacher('can_manage_student');
+                $login = Login::checkPermission($login, array('can_teacher', 'can_manage_student'));
                 break;
         }
         // เลือกเมนู
-        $this->menu = 'module';
+        $this->menu = 'school';
         if (!empty($login)) {
             // แสดงผล
             $section = Html::create('section', array(
@@ -85,6 +87,7 @@ class Controller extends \Gcms\Controller
             return $section->render();
         }
         // 404
+
         return \Index\Error\Controller::execute($this);
     }
 }

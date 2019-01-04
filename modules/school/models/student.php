@@ -41,7 +41,7 @@ class Model extends \Kotchasan\Model
                 $ret['alert'] = Language::get('Sorry, Item not found It&#39;s may be deleted');
             } else {
                 // ครู-อาจารย์, สามารถจัดการนักเรียนได้
-                if (!Login::isTeacher('can_manage_student')) {
+                if (!Login::checkPermission($login, array('can_teacher', 'can_manage_student'))) {
                     // ตัวเอง
                     $login = $login['id'] == $index->id ? $login : false;
                 }
@@ -103,19 +103,16 @@ class Model extends \Kotchasan\Model
                             $student['id'] = $index->id;
                         }
                         // อัปโหลดรูปภาพพร้อมปรับขนาด
+                        $dir = ROOT_PATH.DATA_FOLDER.'school/';
                         foreach ($request->getUploadedFiles() as $item => $file) {
                             /* @var $file UploadedFile */
                             if ($file->hasUploadFile()) {
-                                if (!File::makeDirectory(ROOT_PATH.DATA_FOLDER.'school/')) {
+                                if (!File::makeDirectory($dir)) {
                                     // ไดเรคทอรี่ไม่สามารถสร้างได้
                                     $ret['ret_'.$item] = sprintf(Language::get('Directory %s cannot be created or is read-only.'), DATA_FOLDER.'school/');
-                                } elseif (!$file->validFileExt(array('jpg', 'jpeg', 'png'))) {
-                                    // ชนิดของไฟล์ไม่ถูกต้อง
-                                    $ret['ret_'.$item] = Language::get('The type of file is invalid');
                                 } elseif ($item == 'student_picture') {
-                                    $picture = DATA_FOLDER.'school/'.$student['id'].'.'.$file->getClientFileExt();
                                     try {
-                                        $file->cropImage(array('jpg', 'jpeg', 'png'), ROOT_PATH.$picture, self::$cfg->student_w, self::$cfg->student_h);
+                                        $file->cropImage(array('jpg', 'jpeg', 'png'), $dir.$student['id'].'.jpg', self::$cfg->student_w, self::$cfg->student_h);
                                     } catch (\Exception $exc) {
                                         // ไม่สามารถอัปโหลดได้
                                         $ret['ret_'.$item] = Language::get($exc->getMessage());
@@ -129,9 +126,6 @@ class Model extends \Kotchasan\Model
                         if (empty($ret)) {
                             if ($index->id > 0) {
                                 // แก้ไข
-                                if (isset($picture)) {
-                                    $user['picture'] = $picture;
-                                }
                                 if ($updatepassword && isset($user['password']) && isset($user['username'])) {
                                     $user['salt'] = uniqid();
                                     $user['password'] = sha1($user['password'].$user['salt']);
@@ -142,11 +136,6 @@ class Model extends \Kotchasan\Model
                                 $this->db()->update($this->getTableName('student'), $index->id, $student);
                             } else {
                                 // ใหม่
-                                if (isset($picture)) {
-                                    // update user picture
-                                    $this->db()->update($this->getTableName('user'), $student['id'], array('picture' => $picture));
-                                }
-                                // insert student
                                 $this->db()->insertOrUpdate($this->getTableName('student'), $student);
                             }
                             // ส่งค่ากลับ

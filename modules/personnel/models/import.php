@@ -2,17 +2,17 @@
 /**
  * @filesource modules/personnel/models/import.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace Personnel\Import;
 
 use Gcms\Login;
-use Kotchasan\Language;
 use Kotchasan\Http\Request;
+use Kotchasan\Language;
 use Kotchasan\Text;
 
 /**
@@ -24,8 +24,17 @@ use Kotchasan\Text;
  */
 class Model extends \Kotchasan\Model
 {
+    /**
+     * @var int
+     */
     private $row = 0;
+    /**
+     * @var mixed
+     */
     private $categories;
+    /**
+     * @var mixed
+     */
     private $details;
 
     /**
@@ -49,7 +58,7 @@ class Model extends \Kotchasan\Model
                             $ret['ret_'.$item] = Language::get('The type of file is invalid');
                         } else {
                             // หมวดหมู่ของบุคลากร
-                            $this->categories = array_keys(Language::find('PERSONNEL_CATEGORY', array()));
+                            $this->categories = array_keys(Language::find('CATEGORIES', array()));
                             // รายละเอียดของบุคลาการ
                             $this->details = array_keys(Language::find('PERSONNEL_DETAILS', array()));
                             // import ข้อมูล

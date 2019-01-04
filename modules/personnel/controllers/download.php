@@ -2,10 +2,10 @@
 /**
  * @filesource modules/personnel/controllers/download.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace Personnel\Download;
@@ -33,7 +33,7 @@ class Controller extends \Kotchasan\Controller
         // ส่วนหัวของ CSV
         $header = array();
         $header['no'] = '#';
-        $header['name'] = Language::trans('{LNG_Name} {LNG_Surname}');
+        $header['name'] = Language::trans('{LNG_Name}');
         // ข้อมูลบุคลากร
         $person = array('no' => 0, 'name' => '');
         if (Login::checkPermission(Login::isMember(), 'can_manage_personnel')) {
@@ -42,16 +42,13 @@ class Controller extends \Kotchasan\Controller
         }
         $header['phone'] = Language::get('Phone');
         $person['phone'] = '';
-        // หมวดหมู่ของบุคลากร
-        $personnel_category = array();
         $params = array('active' => $request->get('active', -1)->toInt());
-        foreach (Language::get('PERSONNEL_CATEGORY') as $key => $label) {
-            $params[$key] = $request->get($key)->toInt();
-            $header[$key] = $label;
-            foreach (\Index\Category\Model::init($key)->toSelect() as $category_d => $item) {
-                $personnel_category[$key][$category_d] = $item;
-            }
-            $person[$key] = '';
+        // หมวดหมู่
+        $category = \Index\Category\Model::init();
+        foreach ($category->typies() as $type) {
+            $params[$type] = $request->get($type)->toInt();
+            $header[$type] = $category->label($type);
+            $person[$type] = '';
         }
         // custom item
         foreach (Language::find('PERSONNEL_DETAILS', array()) as $k => $v) {
@@ -68,8 +65,8 @@ class Controller extends \Kotchasan\Controller
                 $person['id_card'] = $item['id_card'];
             }
             $person['phone'] = $item['phone'];
-            foreach ($personnel_category as $key => $values) {
-                $person[$key] = isset($values[$item[$key]]) ? $values[$item[$key]] : '';
+            foreach ($category->typies() as $type) {
+                $person[$type] = $category->get($type, $item[$type]);
             }
             $item['custom'] = @unserialize($item['custom']);
             if (is_array($item['custom'])) {

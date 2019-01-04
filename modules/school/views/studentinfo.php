@@ -2,16 +2,15 @@
 /**
  * @filesource modules/school/views/studentinfo.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Studentinfo;
 
 use Gcms\Login;
-use Index\Category\Model as Category;
 use Kotchasan\Language;
 
 /**
@@ -34,8 +33,8 @@ class View extends \Gcms\View
     public function render($index, $login)
     {
         // picture
-        if (!empty($index->picture) && is_file(ROOT_PATH.$index->picture)) {
-            $img = WEB_URL.$index->picture;
+        if (is_file(ROOT_PATH.DATA_FOLDER.'school/'.$index->id.'.jpg')) {
+            $img = WEB_URL.DATA_FOLDER.'school/'.$index->id.'.jpg';
         } else {
             $img = WEB_URL.'modules/school/img/noimage.jpg';
         }
@@ -43,11 +42,12 @@ class View extends \Gcms\View
         $content[] = '<article class=personnel_view>';
         $content[] = '<header><h3 class=icon-info>{LNG_Details of} {LNG_Student}</h3></header>';
         $content[] = '<p><img src="'.$img.'" style="max-width:'.self::$cfg->student_w.'px;max-height:'.self::$cfg->student_h.'px"></p>';
-        $content[] = '<div class=table>';
-        $content[] = '<p class=tr><span class="td icon-customer">{LNG_Name} {LNG_Surname}</span><span class=td>:</span><span class=td>'.$index->name.'</span></p>';
+        $content[] = '<div class="table fullwidth">';
+        $content[] = '<p class=tr><span class="td icon-customer">{LNG_Name}</span><span class=td>:</span><span class=td>'.$index->name.'</span></p>';
         $content[] = '<p class=tr><span class="td icon-number">{LNG_Student ID}</span><span class=td>:</span><span class=td>'.$index->student_id.'</span></p>';
+        $category = \School\Category\Model::init();
         foreach (Language::get('SCHOOL_CATEGORY') as $key => $value) {
-            $content[] = '<p class=tr><span class="td icon-office">'.$value.'</span><span class=td>:</span><span class=td>'.Category::init($key)->get($index->$key).'</span></p>';
+            $content[] = '<p class=tr><span class="td icon-office">'.$value.'</span><span class=td>:</span><span class=td>'.$category->get($key, $index->$key).'</span></p>';
         }
         if (Login::checkPermission($login, 'can_config')) {
             $content[] = '<p class=tr><span class="td icon-profile">{LNG_Identification number}</span><span class=td>:</span><span class=td>'.$index->id_card.'</span></p>';

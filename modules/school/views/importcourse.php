@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/views/importcourse.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Importcourse;
@@ -75,13 +75,15 @@ class View extends \Gcms\View
             'maxlength' => 4,
             'value' => $request->request('year', self::$cfg->academic_year)->toInt(),
         ));
+        // หมวดหมู่ของนักเรียน
+        $category = \School\Category\Model::init();
         // term
         $groups->add('select', array(
             'id' => 'term',
             'labelClass' => 'g-input icon-category',
             'itemClass' => 'width50',
             'label' => '{LNG_Term}',
-            'options' => \Index\Category\Model::init('term')->toSelect(),
+            'options' => $category->toSelect('term'),
             'value' => $request->request('term', self::$cfg->term)->toInt(),
         ));
         $groups = $fieldset->add('groups');
@@ -100,7 +102,7 @@ class View extends \Gcms\View
             'labelClass' => 'g-input icon-office',
             'itemClass' => 'width50',
             'label' => '{LNG_Class}',
-            'options' => \Index\Category\Model::init('class')->toSelect(),
+            'options' => $category->toSelect('class'),
             'value' => $request->request('class')->toInt(),
         ));
         // import
@@ -136,6 +138,7 @@ class View extends \Gcms\View
         // Javascript
         $form->script('initSchoolImportcourse();');
         // คืนค่า HTML Form
+
         return $form->render();
     }
 }

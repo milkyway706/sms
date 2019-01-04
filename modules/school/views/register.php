@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/views/register.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Register;
@@ -25,8 +25,10 @@ class View extends \Gcms\View
     /**
      * ข้อมูลโมดูล.
      */
-    private $class;
-    private $room;
+    private $category;
+    /**
+     * @var mixed
+     */
     private $uri;
 
     /**
@@ -43,8 +45,7 @@ class View extends \Gcms\View
         $class = $request->request('class')->toInt();
         $room = $request->request('room')->toInt();
         // โหลดตัวแปรต่างๆ
-        $this->class = \Index\Category\Model::init('class');
-        $this->room = \Index\Category\Model::init('room');
+        $this->category = \Index\Category\Model::init();
         // URL สำหรับส่งให้ตาราง กำหนดตัวแปรเพื่อให้สามารถส่งกลับมายังหน้าเดิมได้
         $params = array(
             '_module' => 'school-register',
@@ -86,14 +87,14 @@ class View extends \Gcms\View
                     'name' => 'class',
                     'default' => 0,
                     'text' => '{LNG_Class}',
-                    'options' => array(0 => '{LNG_all items}') + $this->class->toSelect(),
+                    'options' => array(0 => '{LNG_all items}') + $this->category->toSelect('class'),
                     'value' => $class,
                 ),
                 'room' => array(
                     'name' => 'room',
                     'default' => 0,
                     'text' => '{LNG_Room}',
-                    'options' => array(0 => '{LNG_all items}') + $this->room->toSelect(),
+                    'options' => array(0 => '{LNG_all items}') + $this->category->toSelect('room'),
                     'value' => $room,
                 ),
             ),
@@ -106,7 +107,7 @@ class View extends \Gcms\View
                     'text' => '{LNG_Student ID}',
                 ),
                 'name' => array(
-                    'text' => '{LNG_Name} {LNG_Surname}',
+                    'text' => '{LNG_Name}',
                 ),
                 'grade' => array(
                     'text' => '{LNG_Register course}',
@@ -137,6 +138,7 @@ class View extends \Gcms\View
         // save cookie
         setcookie('register_perPage', $table->perPage, time() + 3600 * 24 * 365, '/');
         // คืนค่า HTML
+
         return $table->render();
     }
 
@@ -150,10 +152,9 @@ class View extends \Gcms\View
     public function onRow($item, $o, $prop)
     {
         $item['name'] = '<a id=view_'.$item['id'].'>'.$item['name'].'</a>';
-        //$item['name'] = '<a href="'.$this->uri->withParams(array('module' => 'school-student', 'id' => $item['id'])).'" target=profile>'.$item['name'].'</a>';
         $item['grade'] = '<span class="icon-valid '.(empty($item['grade']) ? 'disabled' : 'access').'"></span>';
-        $item['class'] = $this->class->get($item['class']);
-        $item['room'] = $this->room->get($item['room']);
+        $item['class'] = $this->category->get('class', $item['class']);
+        $item['room'] = $this->category->get('room', $item['room']);
 
         return $item;
     }

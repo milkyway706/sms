@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/models/user.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\User;
@@ -41,7 +41,7 @@ class Model extends \Kotchasan\Model
     private function query()
     {
         return $this->db()->createQuery()
-            ->select('S.*', 'U.name', 'U.picture', 'U.active')
+            ->select('S.*', 'U.name', 'U.active')
             ->from('student S')
             ->join('user U', 'INNER', array('U.id', 'S.id'));
     }
@@ -59,13 +59,13 @@ class Model extends \Kotchasan\Model
 
         return $model->query()
             ->where(array('S.id', $id))
-            ->first('S.*', 'U.name', 'U.birthday', 'U.phone', 'U.sex', 'U.permission', 'U.picture');
+            ->first('S.*', 'U.name', 'U.birthday', 'U.phone', 'U.sex', 'U.permission');
     }
 
     /**
      * อ่านข้อมูลรายการที่เลือกสำหรับหน้า student.php.
      *
-     * @param int   $id     0 หมายถึงรายการใหม่, > 0 รายการที่ต้องการ
+     * @param int   $id     หมายถึงรายการใหม่, > รายการที่ต้องการ
      * @param array $params
      *
      * @return object|null คืนค่าข้อมูล object ไม่พบคืนค่า null
@@ -99,7 +99,7 @@ class Model extends \Kotchasan\Model
             // query ข้อมูลที่เลือก
             return $model->query()
                 ->where(array('S.id', $id))
-                ->first('S.*', 'U.name', 'U.birthday', 'U.phone', 'U.sex', 'U.permission', 'U.picture');
+                ->first('S.*', 'U.name', 'U.birthday', 'U.phone', 'U.sex', 'U.permission');
         }
     }
 
@@ -124,14 +124,12 @@ class Model extends \Kotchasan\Model
             // ไม่มีข้อมูลต้องตรวจสอบ
             return false;
         } else {
-            $model = new static();
-            $search = $model->db()->createQuery()
+            $search = \Kotchasan\Model::createQuery()
                 ->from('student')
                 ->where($where)
-                ->toArray()
                 ->first('id', 'id_card', 'student_id');
-            if ($search !== false && ($id == 0 || $search['id'] != $id)) {
-                if (!empty($student['student_id']) && $student['student_id'] == $search['student_id']) {
+            if ($search !== false && ($id == 0 || $search->id != $id)) {
+                if (!empty($student['student_id']) && $student['student_id'] == $search->student_id) {
                     return 'student_id';
                 } else {
                     return 'id_card';

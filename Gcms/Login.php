@@ -79,12 +79,14 @@ class Login extends \Kotchasan\Login
      */
     public static function checkMember($params)
     {
+        // Model
+        $model = new \Kotchasan\Model();
         // query Where
         $where = array();
         foreach (self::$cfg->login_fields as $field) {
             $where[] = array("U.{$field}", $params['username']);
         }
-        $query = \Kotchasan\Model::createQuery()
+        $query = $model->db()->createQuery()
             ->select()
             ->from('user U')
             ->where($where, 'OR')
@@ -112,9 +114,9 @@ class Login extends \Kotchasan\Login
             self::$login_input = isset($item) ? 'password' : 'username';
 
             return isset($item) ? Language::replace('Incorrect :name', array(':name' => Language::get('Password'))) : Language::get('not a registered user');
-        } else {
-            return $login_result;
         }
+
+        return $login_result;
     }
 
     /**
@@ -188,64 +190,6 @@ class Login extends \Kotchasan\Login
                 }
             }
         }
-    }
-
-    /**
-     * ตรวจสอบสถานะนักเรียนหรือแอดมินของคนที่ Login
-     * คืนค่าข้อมูลสมาชิก (แอเรย์) ถ้าเป็นนักเรียนหรือแอดมิน ไม่ใช่คืนค่า null.
-     *
-     * @param array|string $permission
-     *
-     * @return array|null
-     */
-    public static function isStudent($permission = array())
-    {
-        $login = self::isMember();
-        if (!empty($login)) {
-            if ($login['status'] == 1 || $login['status'] == self::$cfg->student_status) {
-                // แอดมิน, ครู-อาจารย์
-                return $login;
-            } elseif (!empty($permission)) {
-                foreach ((array) $permission as $item) {
-                    if (in_array($item, $login['permission'])) {
-                        // มีสิทธิ์
-                        return $login;
-                    }
-                }
-            }
-        }
-        // ไม่มีสิทธิ
-
-        return null;
-    }
-
-    /**
-     * ตรวจสอบสถานะครูหรือแอดมินของคนที่ Login
-     * คืนค่าข้อมูลสมาชิก (แอเรย์) ถ้าเป็นครูหรือแอดมิน ไม่ใช่คืนค่า null.
-     *
-     * @param array|string $permission
-     *
-     * @return array|null
-     */
-    public static function isTeacher($permission = array())
-    {
-        $login = self::isMember();
-        if (!empty($login)) {
-            if ($login['status'] == 1 || $login['status'] == self::$cfg->teacher_status) {
-                // แอดมิน, ครู-อาจารย์
-                return $login;
-            } elseif (!empty($permission)) {
-                foreach ((array) $permission as $item) {
-                    if (in_array($item, $login['permission'])) {
-                        // มีสิทธิ์
-                        return $login;
-                    }
-                }
-            }
-        }
-        // ไม่มีสิทธิ
-
-        return null;
     }
 
     /**

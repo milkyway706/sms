@@ -2,16 +2,17 @@
 /**
  * @filesource modules/school/views/settings.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Settings;
 
 use Kotchasan\Date;
 use Kotchasan\Html;
+use Kotchasan\Province;
 
 /**
  * module=school-settings.
@@ -86,21 +87,39 @@ class View extends \Gcms\View
         $groups->add('select', array(
             'id' => 'provinceID',
             'labelClass' => 'g-input icon-location',
-            'itemClass' => 'width50',
+            'itemClass' => 'width33',
             'label' => '{LNG_Province}',
             'comment' => '%SCHOOLPROVINCE%',
             'options' => \Kotchasan\Province::all(),
             'value' => isset(self::$cfg->provinceID) ? self::$cfg->provinceID : 102,
         ));
+        // province
+        $groups->add('text', array(
+            'id' => 'province',
+            'labelClass' => 'g-input icon-location',
+            'itemClass' => 'width33',
+            'label' => '{LNG_Province}',
+            'comment' => '%SCHOOLPROVINCE%',
+            'value' => isset(self::$cfg->province) ? self::$cfg->province : '',
+        ));
         // zipcode
         $groups->add('number', array(
             'id' => 'student_zipcode',
             'labelClass' => 'g-input icon-location',
-            'itemClass' => 'width50',
+            'itemClass' => 'width33',
             'label' => '{LNG_Zipcode}',
             'comment' => '%SCHOOLZIPCODE%',
             'maxlength' => 5,
             'value' => isset(self::$cfg->zipcode) ? self::$cfg->zipcode : 10000,
+        ));
+        // country
+        $groups->add('select', array(
+            'id' => 'country',
+            'labelClass' => 'g-input icon-world',
+            'itemClass' => 'width33',
+            'label' => '{LNG_Country}',
+            'options' => \Kotchasan\Country::all(),
+            'value' => isset(self::$cfg->country) ? self::$cfg->country : 'TH',
         ));
         $fieldset = $form->add('fieldset', array(
             'title' => '{LNG_size of} {LNG_Image} ({LNG_Student})',
@@ -127,6 +146,8 @@ class View extends \Gcms\View
         $fieldset = $form->add('fieldset', array(
             'title' => '{LNG_Member status}',
         ));
+        // ลบแอดมินออก
+        unset(self::$cfg->member_status[1]);
         // teacher_status
         $fieldset->add('select', array(
             'id' => 'teacher_status',
@@ -164,7 +185,7 @@ class View extends \Gcms\View
             'labelClass' => 'g-input icon-category',
             'itemClass' => 'item',
             'label' => '{LNG_Term}',
-            'options' => \Index\Category\Model::init('term')->toSelect(),
+            'options' => \School\Category\Model::init()->toSelect('term'),
             'value' => isset(self::$cfg->term) ? self::$cfg->term : 1,
         ));
         $fieldset = $form->add('fieldset', array(
@@ -175,6 +196,8 @@ class View extends \Gcms\View
             'class' => 'button save large icon-save',
             'value' => '{LNG_Save}',
         ));
+        // Javascript
+        $form->script('initEditProfile("", '.json_encode(Province::countries()).');');
 
         return $form->render();
     }

@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/controllers/students.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Students;
@@ -36,9 +36,9 @@ class Controller extends \Gcms\Controller
         // ข้อความ title bar
         $this->title = Language::get('Student list');
         // เลือกเมนู
-        $this->menu = 'module';
+        $this->menu = 'school';
         // ครู-อาจาร์ย, สามารถจัดการรายชื่อนักเรียนได้
-        if (Login::isTeacher('can_manage_student')) {
+        if ($login = Login::checkPermission(Login::isMember(), array('can_manage_student', 'can_manage_course', 'can_teacher', 'can_rate_student'))) {
             // แสดงผล
             $section = Html::create('section', array(
                 'class' => 'content_bg',
@@ -55,11 +55,12 @@ class Controller extends \Gcms\Controller
                 'innerHTML' => '<h2 class="icon-users">'.$this->title.'</h2>',
             ));
             // แสดงตาราง
-            $section->appendChild(createClass('School\Students\View')->render($request));
+            $section->appendChild(createClass('School\Students\View')->render($request, $login));
 
             return $section->render();
         }
         // 404
+
         return \Index\Error\Controller::execute($this);
     }
 }

@@ -2,79 +2,106 @@
 /**
  * @filesource modules/school/models/category.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Category;
 
-use Gcms\Login;
-use Kotchasan\Http\Request;
 use Kotchasan\Language;
 
 /**
- * หมวดหมู่ของโรงเรียน.
+ * คลาสสำหรับอ่านข้อมูลหมวดหมู่.
  *
  * @author Goragod Wiriya <admin@goragod.com>
  *
  * @since 1.0
  */
-class Model extends \Kotchasan\Model
+class Model
 {
     /**
-     * บันทึกหมวดหมู่.
-     *
-     * @param Request $request
+     * @var array
      */
-    public function submit(Request $request)
+    private $categories = array();
+    /**
+     * @var array
+     */
+    private $datas = array();
+
+    public function __construct()
     {
-        $ret = array();
-        // session, referer, can_config
-        if ($request->initSession() && $request->isReferer() && $login = Login::isMember()) {
-            if ($login['active'] == 1 && Login::checkPermission($login, 'can_config')) {
-                // ค่าที่ส่งมา
-                $type = $request->post('type')->topic();
-                $save = array();
-                $category_exists = array();
-                foreach ($request->post('category_id')->toInt() as $key => $value) {
-                    if (isset($category_exists[$value])) {
-                        $ret['ret_category_id_'.$key] = Language::replace('This :name already exist', array(':name' => 'ID'));
-                    } else {
-                        $category_exists[$value] = $value;
-                        $save[$key]['category_id'] = $value;
-                    }
-                }
-                foreach (Language::installedLanguage() as $lng) {
-                    foreach ($request->post($lng)->topic() as $key => $value) {
-                        if ($value != '') {
-                            $save[$key]['topic'][$lng] = $value;
-                        }
-                    }
-                }
-                if (empty($ret)) {
-                    // ชื่อตาราง
-                    $table_name = $this->getTableName('category');
-                    // db
-                    $db = $this->db();
-                    // ลบข้อมูลเดิม
-                    $db->delete($table_name, array('type', $type), 0);
-                    // เพิ่มข้อมูลใหม่
-                    foreach ($save as $item) {
-                        if (isset($item['topic'])) {
-                            $item['topic'] = serialize($item['topic']);
-                            $item['type'] = $type;
-                            $db->insert($table_name, $item);
-                        }
-                    }
-                    // คืนค่า
-                    $ret['alert'] = Language::get('Saved successfully');
-                    $ret['location'] = 'reload';
-                }
+        // หมวดหมู่
+        $this->categories = Language::get('SCHOOL_CATEGORY') + array('term' => Language::get('Term'));
+    }
+
+    /**
+     * คืนค่าหมวดหมู่ (key) ทั้งหมด.
+     *
+     * @return array
+     */
+    public function typies()
+    {
+        return array_keys($this->categories);
+    }
+
+    /**
+     * คืนค่าชื่อหมวดหมู่.
+     *
+     * @return array
+     */
+    public function label($type)
+    {
+        return isset($this->categories[$type]) ? $this->categories[$type] : '';
+    }
+
+    /**
+     * @return static
+     */
+    public static function init()
+    {
+        $obj = new static();
+        // Query ข้อมูลหมวดหมู่จากตาราง category
+        $query = \Kotchasan\Model::createQuery()
+            ->select('category_id', 'topic', 'type')
+            ->from('category')
+            ->where(array('type', $obj->typies()))
+            ->order('category_id')
+            ->cacheOn();
+        // ภาษาที่ใช้งานอยู่
+        $lng = Language::name();
+        foreach ($query->execute() as $item) {
+            $topic = @unserialize($item->topic);
+            if (isset($topic[$lng])) {
+                $obj->datas[$item->type][$item->category_id] = $topic[$lng];
             }
-            // คืนค่า JSON
-            echo json_encode($ret);
         }
+
+        return $obj;
+    }
+
+    /**
+     * ลิสต์รายการหมวดหมู่
+     * สำหรับใส่ลงใน select.
+     *
+     * @param string $type
+     *
+     * @return array
+     */
+    public function toSelect($type)
+    {
+        return empty($this->datas[$type]) ? array() : $this->datas[$type];
+    }
+
+    /**
+     * คืนค่ารายการที่ต้องการ.
+     *
+     * @param string $type
+     * @param int    $category_id
+     */
+    public function get($type, $category_id)
+    {
+        return empty($this->datas[$type][$category_id]) ? '' : $this->datas[$type][$category_id];
     }
 }

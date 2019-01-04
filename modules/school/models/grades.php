@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/models/grades.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Grades;
@@ -65,7 +65,7 @@ class Model extends \Kotchasan\Model
                     $model = new \Kotchasan\Model();
                     // ตาราง
                     $table = $model->getTableName('grade');
-                    if ($action === 'delete') {
+                    if ($action === 'delete' && Login::checkPermission($login, array('can_manage_course', 'can_teacher'))) {
                         // ลบ
                         $model->db()->delete($table, array('id', $match[1]), 0);
                         // reload

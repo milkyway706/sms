@@ -2,14 +2,15 @@
 /**
  * @filesource modules/school/views/students.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Students;
 
+use Gcms\Login;
 use Kotchasan\DataTable;
 use Kotchasan\Http\Request;
 use Kotchasan\Language;
@@ -27,16 +28,27 @@ class View extends \Gcms\View
      * ข้อมูลโมดูล.
      */
     private $params = array();
+    /**
+     * @var mixed
+     */
+    private $category;
+    /**
+     * @var bool
+     */
+    private $canEdit;
 
     /**
      * ตารางรายชื่อนักเรียน.
      *
      * @param Request $request
+     * @param array   $login
      *
      * @return string
      */
-    public function render(Request $request)
+    public function render(Request $request, $login)
     {
+        // สามารถแกไขข้อมูลนักเรียนได้
+        $this->canEdit = Login::checkPermission($login, array('can_manage_student', 'can_manage_course', 'can_teacher'));
         // เตรียมข้อมูลสำหรับใส่ลงในตาราง
         $filters = array();
         $fields = array('id', 'number', 'student_id', 'name', 'phone', 'active');
@@ -50,7 +62,7 @@ class View extends \Gcms\View
                 'sort' => 'student_id',
             ),
             'name' => array(
-                'text' => '{LNG_Name} {LNG_Surname}',
+                'text' => '{LNG_Name}',
                 'sort' => 'name',
             ),
             'phone' => array(
@@ -65,17 +77,17 @@ class View extends \Gcms\View
         );
         $actions = array();
         // หมวดหมู่ของนักเรียน
+        $this->category = \School\Category\Model::init();
         foreach (Language::get('SCHOOL_CATEGORY') as $key => $label) {
             $this->params[$key] = $request->request($key)->toInt();
-            $this->$key = \Index\Category\Model::init($key);
-            foreach ($this->$key->toSelect() as $k => $v) {
+            foreach ($this->category->toSelect($key) as $k => $v) {
                 $actions[$key.'_'.$k] = '{LNG_move to} '.$label.' '.$v;
             }
             $filters[$key] = array(
                 'name' => $key,
                 'text' => $label,
                 'default' => 0,
-                'options' => array(0 => '{LNG_all items}') + $this->$key->toSelect(),
+                'options' => array(0 => '{LNG_all items}') + $this->category->toSelect($key),
                 'value' => $this->params[$key],
             );
             $fields[] = $key;
@@ -167,6 +179,7 @@ class View extends \Gcms\View
         // Javascript
         $table->script('initSchool("students", "number");');
         // คืนค่า HTML
+
         return $table->render();
     }
 
@@ -184,7 +197,7 @@ class View extends \Gcms\View
         }
         $item['phone'] = self::showPhone($item['phone']);
         foreach ($this->params as $k => $v) {
-            $item[$k] = $this->$k->get($item[$k]);
+            $item[$k] = $this->category->get($k, $item[$k]);
         }
 
         return $item;
@@ -201,7 +214,7 @@ class View extends \Gcms\View
      */
     public function onCreateButton($btn, $attributes, $items)
     {
-        if ($btn != 'edit' || $items['active'] == 1) {
+        if ($btn != 'edit' || ($items['active'] == 1 && $this->canEdit)) {
             return $attributes;
         } else {
             return false;

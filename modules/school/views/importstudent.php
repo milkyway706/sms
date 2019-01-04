@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/views/importstudent.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Importstudent;
@@ -48,17 +48,18 @@ class View extends \Gcms\View
             'title' => '{LNG_Details of} {LNG_Student}',
         ));
         // หมวดหมู่ของนักเรียน
+        $category = \School\Category\Model::init();
         $categories = array();
-        foreach (Language::get('SCHOOL_CATEGORY') as $key => $label) {
+        foreach ($category->typies() as $type) {
             $fieldset->add('select', array(
-                'id' => $key,
+                'id' => $type,
                 'labelClass' => 'g-input icon-office',
                 'itemClass' => 'item',
-                'label' => $label,
-                'options' => \Index\Category\Model::init($key)->toSelect(),
-                'value' => $request->request($key)->toInt(),
+                'label' => $category->label($type),
+                'options' => $category->toSelect($type),
+                'value' => $request->request($type)->toInt(),
             ));
-            $categories[] = '<a href="'.WEB_URL.'index.php?module=school-category&amp;type='.$key.'" target=_blank>'.$label.'</a>';
+            $categories[] = '<a href="'.WEB_URL.'index.php?module=school-categories&amp;type='.$type.'" target=_blank>'.$category->label($type).'</a>';
         }
         // import
         $fieldset->add('file', array(
@@ -93,6 +94,7 @@ class View extends \Gcms\View
         // Javascript
         $form->script('initSchoolImportStudent();');
         // คืนค่า HTML Form
+
         return $form->render();
     }
 }

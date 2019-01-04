@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/controllers/download.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Download;
@@ -54,12 +54,12 @@ class Controller extends \Kotchasan\Controller
         $header = array();
         $header[] = Language::get('Number');
         $header[] = Language::get('Student ID');
-        $header[] = Language::trans('{LNG_Name} {LNG_Surname}');
+        $header[] = Language::trans('{LNG_Name}');
         $header[] = Language::get('Identification number');
         $header[] = Language::get('Sex');
         $header[] = Language::get('Phone');
         $header[] = Language::get('Address');
-        $header[] = Language::trans('{LNG_Name} {LNG_Surname} ({LNG_Parent})');
+        $header[] = Language::trans('{LNG_Name} ({LNG_Parent})');
         $header[] = Language::trans('{LNG_Phone} ({LNG_Parent})');
         $params = array();
         $categories = array();
@@ -92,7 +92,7 @@ class Controller extends \Kotchasan\Controller
         $header = array();
         $header[] = Language::get('Number');
         $header[] = Language::get('Student ID');
-        $header[] = Language::trans('{LNG_Name} {LNG_Surname}');
+        $header[] = Language::trans('{LNG_Name}');
         $header[] = Language::get('Course Code');
         $header[] = Language::get('Academic year');
         $header[] = Language::get('Term');
@@ -103,13 +103,12 @@ class Controller extends \Kotchasan\Controller
             'subject' => $request->get('subject')->toInt(),
             'room' => $request->get('room')->toInt(),
         );
-        $room = \Index\Category\Model::init('room');
-        $class = \Index\Category\Model::init('class');
+        $category = \School\Category\Model::init();
         $grade = Language::get('SCHOOL_GRADES');
         $datas = array();
         foreach (\School\Download\Model::grade($params) as $item) {
-            $item['room'] = $room->get($item['room']);
-            $item['class'] = $class->get($item['class']);
+            $item['room'] = $category->get('room', $item['room']);
+            $item['class'] = $category->get('class', $item['class']);
             $item['grade'] = isset($grade[$item['grade']]) ? $grade[$item['grade']] : '';
             $datas[] = $item;
         }

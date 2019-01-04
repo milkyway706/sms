@@ -2,10 +2,10 @@
 /**
  * @filesource modules/school/models/teacher.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace School\Teacher;
@@ -19,6 +19,9 @@ namespace School\Teacher;
  */
 class Model extends \Kotchasan\Model
 {
+    /**
+     * @var array
+     */
     private $datas = array();
 
     /**
@@ -46,7 +49,7 @@ class Model extends \Kotchasan\Model
     /**
      * คืนค่ารายชื่อครูใส่ลงใน select.
      *
-     * @param int $can_manage_course 0 คืนค่าทุกคน, > 0 คืนค่ารายการที่เลือก
+     * @param int $can_manage_course คืนค่าทุกคน, > คืนค่ารายการที่เลือก
      *
      * @return array
      */

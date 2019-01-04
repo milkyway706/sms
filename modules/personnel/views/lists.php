@@ -2,17 +2,16 @@
 /**
  * @filesource modules/personnel/views/lists.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace Personnel\Lists;
 
 use Kotchasan\DataTable;
 use Kotchasan\Http\Request;
-use Kotchasan\Language;
 
 /**
  * module=personnel-setup.
@@ -26,8 +25,10 @@ class View extends \Gcms\View
     /**
      * ข้อมูลโมดูล.
      */
-    private $position;
-    private $department;
+    private $category;
+    /**
+     * @var mixed
+     */
     private $login;
 
     /**
@@ -44,40 +45,39 @@ class View extends \Gcms\View
         // เตรียมข้อมูลสำหรับใส่ลงในตาราง
         $filters = array();
         $fields = array(
-            'id' => 'id',
             'name' => 'name',
         );
         $headers = array(
             'name' => array(
-                'text' => '{LNG_Name} {LNG_Surname}',
+                'text' => '{LNG_Name}',
             ),
         );
         $cols = array(
-            'picture' => array(
+            'id' => array(
                 'class' => 'center',
             ),
         );
-        // หมวดหมู่ของบุคลากร
-        foreach (Language::get('PERSONNEL_CATEGORY') as $key => $label) {
-            $this->$key = \Index\Category\Model::init($key);
-            $fields[$key] = $label;
-            $filters[$key] = array(
-                'name' => $key,
-                'text' => $label,
-                'options' => array(0 => '{LNG_all items}') + $this->$key->toSelect(),
+        // หมวดหมู่
+        $this->category = \Index\Category\Model::init();
+        foreach ($this->category->typies() as $type) {
+            $fields[$type] = $this->category->label($type);
+            $filters[$type] = array(
+                'name' => $type,
+                'text' => $fields[$type],
+                'options' => array(0 => '{LNG_all items}') + $this->category->toSelect($type),
                 'default' => 0,
-                'value' => $request->request($key)->toInt(),
+                'value' => $request->request($type)->toInt(),
             );
-            $headers[$key] = array(
-                'text' => $label,
+            $headers[$type] = array(
+                'text' => $fields[$type],
                 'class' => 'center',
             );
-            $cols[$key] = array(
+            $cols[$type] = array(
                 'class' => 'center',
             );
         }
-        $fields['picture'] = 'picture';
-        $headers['picture'] = array(
+        $fields['id'] = 'id';
+        $headers['id'] = array(
             'text' => '{LNG_Image}',
             'class' => 'center',
         );
@@ -101,8 +101,6 @@ class View extends \Gcms\View
             'fields' => array_keys($fields),
             /* ฟังก์ชั่นจัดรูปแบบการแสดงผลแถวของตาราง */
             'onRow' => array($this, 'onRow'),
-            /* คอลัมน์ที่ไม่ต้องแสดงผล */
-            'hideColumns' => array('id'),
             /* ไม่แสดง checkbox */
             'hideCheckbox' => true,
             /* คอลัมน์ที่สามารถค้นหาได้ */
@@ -142,6 +140,7 @@ class View extends \Gcms\View
         // save cookie
         setcookie('person_perPage', $table->perPage, time() + 3600 * 24 * 365, '/');
         // คืนค่า HTML
+
         return $table->render();
     }
 
@@ -154,10 +153,14 @@ class View extends \Gcms\View
      */
     public function onRow($item, $o, $prop)
     {
-        $item['position'] = $this->position->get($item['position']);
-        $item['department'] = $this->department->get($item['department']);
-        $thumb = is_file(ROOT_PATH.$item['picture']) ? WEB_URL.$item['picture'] : WEB_URL.'modules/personnel/img/noimage.jpg';
-        $item['picture'] = '<img src="'.$thumb.'" style="max-height:50px" alt=thumbnail>';
+        foreach ($this->category->typies() as $type) {
+            $item[$type] = $this->category->get($type, $item[$type]);
+        }
+        if (is_file(ROOT_PATH.DATA_FOLDER.'personnel/'.$item['id'].'.jpg')) {
+            $item['id'] = '<img src="'.WEB_URL.DATA_FOLDER.'personnel/'.$item['id'].'.jpg'.'" style="max-height:50px" alt=thumbnail>';
+        } else {
+            $item['id'] = '<img src="'.WEB_URL.'modules/personnel/img/noimage.jpg" style="max-height:50px" alt=thumbnail>';
+        }
 
         return $item;
     }

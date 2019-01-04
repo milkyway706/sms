@@ -2,10 +2,10 @@
 /**
  * @filesource modules/personnel/controllers/import.php
  *
- * @see http://www.kotchasan.com/
- *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace Personnel\Import;
@@ -36,7 +36,7 @@ class Controller extends \Gcms\Controller
         // ข้อความ title bar
         $this->title = Language::trans('{LNG_Import} {LNG_Personnel list}');
         // เลือกเมนู
-        $this->menu = 'module';
+        $this->menu = 'settings';
         // สามารถจัดการรายชื่อบุคลากรได้
         if (Login::checkPermission(Login::isMember(), 'can_manage_personnel')) {
             // แสดงผล
@@ -61,6 +61,7 @@ class Controller extends \Gcms\Controller
             return $section->render();
         }
         // 404
+
         return \Index\Error\Controller::execute($this);
     }
 }

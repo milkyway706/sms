@@ -1,9 +1,11 @@
 <?php
-/*
+/**
  * @filesource modules/personnel/controllers/init.php
- * @link http://www.kotchasan.com/
+ *
  * @copyright 2016 Goragod.com
  * @license http://www.kotchasan.com/license/
+ *
+ * @see http://www.kotchasan.com/
  */
 
 namespace Personnel\Init;
@@ -31,12 +33,22 @@ class Controller extends \Kotchasan\KBase
      */
     public static function execute(Request $request, $menu, $login)
     {
-        $submenus = array(
-            array(
-                'text' => '{LNG_Personnel list}',
-                'url' => 'index.php?module=personnel-setup',
-            ),
-        );
+        $menu->addTopLvlMenu('personnel', '{LNG_Personnel}', 'index.php?module=personnel-setup', null, 'module');
+        $submenus = array();
+        // สามารถตั้งค่าระบบได้
+        if (Login::checkPermission(Login::isMember(), 'can_config')) {
+            $submenus[] = array(
+                'text' => '{LNG_Settings}',
+                'url' => 'index.php?module=personnel-settings',
+            );
+            foreach (Language::get('CATEGORIES') as $type => $text) {
+                $submenus[] = array(
+                    'text' => $text,
+                    'url' => 'index.php?module=index-categories&amp;type='.$type,
+                );
+            }
+        }
+        // สามารถจัดการ personnel ได้
         if (Login::checkPermission($login, 'can_manage_personnel')) {
             $submenus[] = array(
                 'text' => '{LNG_Import} {LNG_Personnel list}',
@@ -47,20 +59,9 @@ class Controller extends \Kotchasan\KBase
                 'url' => 'index.php?module=personnel-write',
             );
         }
-        $menu->add('module', '{LNG_Personnel}', null, $submenus);
-        $submenus = array(
-            array(
-                'text' => '{LNG_Settings}',
-                'url' => 'index.php?module=personnel-settings',
-            ),
-        );
-        foreach (Language::get('PERSONNEL_CATEGORY') as $type => $text) {
-            $submenus[] = array(
-                'text' => $text,
-                'url' => 'index.php?module=personnel-category&amp;type='.$type,
-            );
+        if (!empty($submenus)) {
+            $menu->add('settings', '{LNG_Personnel}', null, $submenus);
         }
-        $menu->add('settings', '{LNG_Personnel}', null, $submenus);
     }
 
     /**

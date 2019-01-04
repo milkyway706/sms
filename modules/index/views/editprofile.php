@@ -94,7 +94,7 @@ class View extends \Gcms\View
             'id' => 'register_name',
             'labelClass' => 'g-input icon-customer',
             'itemClass' => 'width50',
-            'label' => '{LNG_Name} {LNG_Surname}',
+            'label' => '{LNG_Name}',
             'maxlength' => 100,
             'value' => $user['name'],
         ));

@@ -19,48 +19,48 @@ namespace Personnel\Lists;
  */
 class Model extends \Kotchasan\Model
 {
-    /**
-     * @var mixed
-     */
-    private $datas;
+  /**
+   * @var mixed
+   */
+  private $datas;
 
-    /**
-     * query บุคลากร แยกตามตำแหน่ง.
-     *
-     * @param int $exclude_id ID ของสมาชิกที่ไม่ต้องการ
-     *
-     * @return \static
-     */
-    public static function init($exclude_id)
-    {
-        // Model
-        $model = new static();
-        $query = $model->db()->createQuery()
-            ->select('P.id', 'P.position', 'U.name')
-            ->from('personnel P')
-            ->join('user U', 'INNER', array('U.id', 'P.id'))
-            ->where(array(
-                array('P.id', '!=', $exclude_id),
-                array('U.active', 1),
-            ))
-            ->toArray()
-            ->order('U.name');
-        foreach ($query->execute() as $item) {
-            $model->datas[$item['position']][$item['id']] = $item['name'];
-        }
-
-        return $model;
+  /**
+   * query บุคลากร แยกตามตำแหน่ง.
+   *
+   * @param int $exclude_id ID ของสมาชิกที่ไม่ต้องการ
+   *
+   * @return \static
+   */
+  public static function init($exclude_id)
+  {
+    // Model
+    $model = new static();
+    $query = $model->db()->createQuery()
+      ->select('P.id', 'P.position', 'U.name')
+      ->from('personnel P')
+      ->join('user U', 'INNER', array('U.id', 'P.id'))
+      ->where(array(
+        array('P.id', '!=', $exclude_id),
+        array('U.active', 1),
+      ))
+      ->toArray()
+      ->order('U.name');
+    foreach ($query->execute() as $item) {
+      $model->datas[$item['position']][$item['id']] = $item['name'];
     }
 
-    /**
-     * รายชื่อสมาชิก สถานะที่เลือก
-     *
-     * @param int $status
-     *
-     * @return array
-     */
-    public function get($status)
-    {
-        return isset($this->datas[$status]) ? $this->datas[$status] : array();
-    }
+    return $model;
+  }
+
+  /**
+   * รายชื่อสมาชิก สถานะที่เลือก
+   *
+   * @param int $status
+   *
+   * @return array
+   */
+  public function get($status)
+  {
+    return isset($this->datas[$status]) ? $this->datas[$status] : array();
+  }
 }

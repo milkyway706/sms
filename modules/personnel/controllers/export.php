@@ -23,36 +23,37 @@ use Kotchasan\Language;
  */
 class Controller extends \Kotchasan\Controller
 {
-    /**
-     * ส่งออกไฟล์ตัวอย่าง person.csv.
-     *
-     * @param Request $request
-     */
-    public function execute(Request $request)
-    {
-        $header = array();
-        $header[] = Language::trans('{LNG_Name} *');
-        $header[] = Language::trans('{LNG_Identification number} **');
-        $header[] = Language::get('Birthday');
-        $header[] = Language::get('Phone');
-        $birthday = Date::format(time(), 'Y-m-d');
-        $person = array(
-            array('นายสมชาย โนนกระโทก', '', $birthday, ''),
-            array('นางสมศรี รักงานดี', '', $birthday, ''),
-        );
-        // หมวดหมู่ของบุคลากร
-        foreach (Language::get('CATEGORIES') as $key => $label) {
-            $header[] = $label;
-            $person[0][] = 1;
-            $person[1][] = 1;
-        }
-        // รายละเอียดของบุคลากร
-        foreach (Language::find('PERSONNEL_DETAILS', array()) as $key => $label) {
-            $header[] = $label;
-            $person[0][] = '';
-            $person[1][] = '';
-        }
-        // ดาวน์โหลดไฟล์ person.csv
-        \Kotchasan\Csv::send('person', $header, $person);
+
+  /**
+   * ส่งออกไฟล์ตัวอย่าง person.csv.
+   *
+   * @param Request $request
+   */
+  public function execute(Request $request)
+  {
+    $header = array();
+    $header[] = Language::trans('{LNG_Name} *');
+    $header[] = Language::trans('{LNG_Identification number} **');
+    $header[] = Language::get('Birthday');
+    $header[] = Language::get('Phone');
+    $birthday = Date::format(time(), 'Y-m-d');
+    $person = array(
+      array('นายสมชาย โนนกระโทก', '', $birthday, ''),
+      array('นางสมศรี รักงานดี', '', $birthday, ''),
+    );
+    // หมวดหมู่ของบุคลากร
+    foreach (Language::get('CATEGORIES') as $key => $label) {
+      $header[] = $label;
+      $person[0][] = 1;
+      $person[1][] = 1;
     }
+    // รายละเอียดของบุคลากร
+    foreach (Language::find('PERSONNEL_DETAILS', array()) as $key => $label) {
+      $header[] = $label;
+      $person[0][] = '';
+      $person[1][] = '';
+    }
+    // ดาวน์โหลดไฟล์ person.csv
+    \Kotchasan\Csv::send('person', $header, $person);
+  }
 }

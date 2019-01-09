@@ -23,35 +23,36 @@ use Kotchasan\Language;
  */
 class Controller extends \Gcms\Controller
 {
-    /**
-     * ตั้งค่าระบบอีเมล.
-     *
-     * @param Request $request
-     *
-     * @return string
-     */
-    public function render(Request $request)
-    {
-        // ข้อความ title bar
-        $this->title = Language::get('Help');
-        // เลือกเมนู
-        $this->menu = 'help';
-        // แสดงผล
-        $section = Html::create('section', array(
-            'class' => 'content_bg',
-        ));
-        // breadcrumbs
-        $breadcrumbs = $section->add('div', array(
-            'class' => 'breadcrumbs',
-        ));
-        $ul = $breadcrumbs->add('ul');
-        $ul->appendChild('<li><span class="icon-home">{LNG_Home}</span></li>');
-        $ul->appendChild('<li><span>{LNG_Help}</span></li>');
-        $section->add('header', array(
-            'innerHTML' => '<h2 class="icon-help">'.$this->title.'</h2>',
-        ));
-        $section->appendChild(file_get_contents(ROOT_PATH.'modules/help/views/index.html'));
 
-        return $section->render();
-    }
+  /**
+   * ตั้งค่าระบบอีเมล.
+   *
+   * @param Request $request
+   *
+   * @return string
+   */
+  public function render(Request $request)
+  {
+    // ข้อความ title bar
+    $this->title = Language::get('Help');
+    // เลือกเมนู
+    $this->menu = 'help';
+    // แสดงผล
+    $section = Html::create('section', array(
+        'class' => 'content_bg',
+    ));
+    // breadcrumbs
+    $breadcrumbs = $section->add('div', array(
+      'class' => 'breadcrumbs',
+    ));
+    $ul = $breadcrumbs->add('ul');
+    $ul->appendChild('<li><span class="icon-home">{LNG_Home}</span></li>');
+    $ul->appendChild('<li><span>{LNG_Help}</span></li>');
+    $section->add('header', array(
+      'innerHTML' => '<h2 class="icon-help">'.$this->title.'</h2>',
+    ));
+    $section->appendChild(file_get_contents(ROOT_PATH.'modules/help/views/index.html'));
+
+    return $section->render();
+  }
 }

@@ -301,9 +301,9 @@ class Model extends \Kotchasan\Model
         // parent
         $student['parent'] = iconv('Windows-874', 'UTF-8', Text::topic($value));
       } elseif ($key == 9) {
-        // address
+        // parent_phone
         $student['parent_phone'] = iconv('Windows-874', 'UTF-8', Text::topic($value));
-      } else {
+      } elseif (isset($this->categories[$key - 10])) {
         // หมวดหมู่
         $student[$this->categories[$key - 10]] = (int)$value;
       }

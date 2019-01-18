@@ -63,17 +63,16 @@ class Controller extends \Kotchasan\Controller
     $header[] = Language::trans('{LNG_Name} ({LNG_Parent})');
     $header[] = Language::trans('{LNG_Phone} ({LNG_Parent})');
     $params = array();
-    $categories = array();
     foreach (Language::get('SCHOOL_CATEGORY') as $k => $v) {
       $params[$k] = $request->get($k)->toInt();
-      $categories[$k] = \Index\Category\Model::init($k);
       $header[] = $v;
     }
     $sexes = Language::get('SEXES');
+    $category = \School\Category\Model::init();
     $datas = array();
     foreach (\School\Download\Model::student($params, $request->get('active')->toInt()) as $item) {
       foreach ($params as $k => $v) {
-        $item[$k] = $categories[$k]->get($item[$k]);
+        $item[$k] = $category->get($k, $item[$k]);
       }
       if (isset($sexes[$item['sex']])) {
         $item['sex'] = $sexes[$item['sex']];

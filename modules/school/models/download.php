@@ -53,7 +53,6 @@ class Model extends \Kotchasan\Model
     if (!empty($where)) {
       $query->where($where);
     }
-
     return $query->execute();
   }
 
@@ -78,7 +77,6 @@ class Model extends \Kotchasan\Model
       ->from('user U')
       ->where(array('U.id', 'S.id'))
       ->limit(1);
-
     return $model->db()->createQuery()
         ->select('G.number', 'S.student_id', array($q1, 'name'), 'C.course_code', 'C.year', 'C.term', 'C.class', 'G.room', 'G.grade')
         ->from('grade G')

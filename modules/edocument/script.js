@@ -1,7 +1,7 @@
 function initEdocumentView(id) {
-  callClick(id, function (e) {
+  callClick(id, function(e) {
     if (confirm(trans("Downloading is a signed document"))) {
-      var req = new GAjax({asynchronous: false});
+      var req = new GAjax({ asynchronous: false });
       req.send(WEB_URL + "index.php/edocument/model/download", "id=" + id);
       var datas = req.responseText.toJSON();
       if (datas) {

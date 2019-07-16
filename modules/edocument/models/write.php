@@ -47,6 +47,7 @@ class Model extends \Kotchasan\Model
                 'document_no' => sprintf(self::$cfg->edocument_format_no, $id),
                 'sender_id' => (int) $login['id'],
                 'reciever' => array_keys(self::$cfg->member_status),
+                'urgency' => 2,
                 'topic' => '',
                 'detail' => '',
             );
@@ -79,6 +80,7 @@ class Model extends \Kotchasan\Model
                 $save = array(
                     'document_no' => $request->post('document_no')->topic(),
                     'reciever' => $request->post('reciever', array())->toInt(),
+                    'urgency' => $request->post('urgency')->toInt(),
                     'topic' => $request->post('topic')->topic(),
                     'detail' => $request->post('detail')->textarea(),
                 );
@@ -110,10 +112,10 @@ class Model extends \Kotchasan\Model
                             $ret['ret_detail'] = 'Please fill in';
                         } else {
                             // อัปโหลดไฟล์
+                            $dir = ROOT_PATH.DATA_FOLDER.'edocument/';
                             foreach ($request->getUploadedFiles() as $item => $file) {
                                 /* @var $file \Kotchasan\Http\UploadedFile */
                                 if ($file->hasUploadFile()) {
-                                    $dir = ROOT_PATH.DATA_FOLDER.'edocument/';
                                     if (!File::makeDirectory($dir)) {
                                         // ไดเรคทอรี่ไม่สามารถสร้างได้
                                         $ret['ret_'.$item] = sprintf(Language::get('Directory %s cannot be created or is read-only.'), DATA_FOLDER.'edocument/');
@@ -165,6 +167,7 @@ class Model extends \Kotchasan\Model
                             $reciever = $save['reciever'];
                             $save['reciever'] = ','.implode(',', $reciever).',';
                             $save['ip'] = $request->getClientIp();
+                            $save['topic'] = preg_replace('/[,;:_]{1,}/', '_', $save['topic']);
                             if ($index->id == 0) {
                                 // ใหม่
                                 $save['sender_id'] = $login['id'];

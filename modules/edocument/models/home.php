@@ -28,8 +28,7 @@ class Model extends \Kotchasan\Model
      */
     public static function getNew($login)
     {
-        $model = new static();
-        $search = $model->db()->createQuery()
+        $search = static::createQuery()
             ->from('edocument A')
             ->where(array(
                 array('A.reciever', 'LIKE', '%,'.$login['status'].',%'),

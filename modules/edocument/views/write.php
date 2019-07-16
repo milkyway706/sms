@@ -11,6 +11,7 @@
 namespace Edocument\Write;
 
 use Kotchasan\Html;
+use Kotchasan\Language;
 use Kotchasan\Text;
 
 /**
@@ -68,6 +69,16 @@ class View extends \Gcms\View
             'options' => self::$cfg->member_status,
             'value' => $index->reciever,
         ));
+        // urgency
+        $urgencies = Language::get('URGENCIES');
+        $fieldset->add('radiogroups', array(
+            'id' => 'urgency',
+            'labelClass' => 'g-input icon-rocket',
+            'itemClass' => 'item',
+            'label' => '{LNG_Urgency}',
+            'options' => array_map(array('Edocument\View\View', 'urgencyStyle'), array_keys($urgencies), array_values($urgencies)),
+            'value' => $index->urgency,
+        ));
         // topic
         $fieldset->add('text', array(
             'id' => 'topic',
@@ -75,7 +86,7 @@ class View extends \Gcms\View
             'itemClass' => 'item',
             'label' => '{LNG_Document title}',
             'comment' => '{LNG_The name of the document when downloaded. If empty, use the name of the uploaded file. (Thai language available)}',
-            'maxlength' => 50,
+            'maxlength' => 255,
             'value' => $index->topic,
         ));
         // file
@@ -86,6 +97,8 @@ class View extends \Gcms\View
             'label' => '{LNG_Browse file}',
             'comment' => '{LNG_Upload :type files no larger than :size}',
             'accept' => self::$cfg->edocument_file_typies,
+            'onchange' => 'edocumentFileChanged',
+            'dataPreview' => 'filePreview',
         ));
         // detail
         $fieldset->add('textarea', array(
@@ -93,7 +106,7 @@ class View extends \Gcms\View
             'labelClass' => 'g-input icon-file',
             'itemClass' => 'item',
             'label' => '{LNG_Description}',
-            'comment' => '{LNG_Notes or Additional Notes}',
+            'comment' => '{LNG_Note or additional notes}',
             'rows' => 5,
             'value' => $index->detail,
         ));
@@ -107,7 +120,7 @@ class View extends \Gcms\View
         ));
         $fieldset->add('checkbox', array(
             'id' => 'send_mail',
-            'label' => '&nbsp;{LNG_Send a notification message to the person concerned}',
+            'label' => '&nbsp;{LNG_Send an email to members}',
             'checked' => self::$cfg->edocument_send_mail && $index->id == 0,
             'value' => 1,
         ));

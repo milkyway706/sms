@@ -60,6 +60,7 @@ class Controller extends \Gcms\Controller
                 ));
                 // รายละเอียดการรับหนังสือ
                 $section->appendChild(createClass('Edocument\Report\View')->render($request, $index));
+                // คืนค่า HTML
 
                 return $section->render();
             }

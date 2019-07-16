@@ -44,7 +44,7 @@ class Model extends \Kotchasan\Model
                     'status' => $isAdmin ? $request->post('register_status')->toInt() : 0,
                     'active' => 1,
                 );
-                $permission = $request->post('register_permission', array())->topic();
+                $permission = $isAdmin ? $request->post('register_permission', array())->topic() : array();
                 if (empty($save['username'])) {
                     $ret['ret_register_username'] = 'Please fill in';
                 } else {
@@ -89,7 +89,7 @@ class Model extends \Kotchasan\Model
                         $err = \Kotchasan\Email::send($save['username'], self::$cfg->noreply_email, $subject, $msg);
                         if ($err->error()) {
                             // คืนค่า error
-                            $ret['alert'] = $err->getErrorMessage();
+                            $ret['alert'] = strip_tags($err->getErrorMessage());
                         } else {
                             // คืนค่า
                             $ret['alert'] = Language::replace('Register successfully, We have sent complete registration information to :email', array(':email' => $save['username']));

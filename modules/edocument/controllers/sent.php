@@ -56,6 +56,7 @@ class Controller extends \Gcms\Controller
             ));
             // รายการหนังสือส่ง
             $section->appendChild(createClass('Edocument\Sent\View')->render($request, $login));
+            // คืนค่า HTML
 
             return $section->render();
         }

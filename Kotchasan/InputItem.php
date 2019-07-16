@@ -187,16 +187,16 @@ class InputItem
     }
 
     /**
-     * ลบ PHP tag และแปลง \ เป็น $#92; ใช้รับข้อมูลจาก editor
+     * ลบ PHP tag และแปลง \ { } สำหรับใช้รับข้อมูลจาก editor
      * เช่นเนื้อหาของบทความ
      *
-     * @assert create('ทด\/สอบ<?php echo "555"?>')->detail() [==] 'ทด&#92;/สอบ'
+     * @assert create('{ทด\/สอบ<?php echo "555"?>}')->detail() [==] '&#x007B;ทด&#92;/สอบ&#x007D;'
      *
      * @return string|array
      */
     public function detail()
     {
-        return preg_replace(array('/<\?(.*?)\?>/su', '/\\\/'), array('', '&#92;'), $this->value);
+        return preg_replace(array('/<\?(.*?)\?>/su', '/\{/', '/\}/', '/\\\/'), array('', '&#x007B;', '&#x007D;', '&#92;'), $this->value);
     }
 
     /**
@@ -345,13 +345,13 @@ class InputItem
      * และลบช่องว่างหัวท้าย
      * ใช้รับข้อมูลที่มาจาก textarea.
      *
-     * @assert create("ทด\/สอบ\n<?php echo '555'?>")->textarea() [==] "ทด&#92;/สอบ\n&lt;?php echo '555'?&gt;"
+     * @assert create("ทด\/สอบ\n<?php echo '$555'?>")->textarea() [==] "ทด&#92;/สอบ\n&lt;?php echo '&#36;555'?&gt;"
      *
      * @return string|array
      */
     public function textarea()
     {
-        return trim(preg_replace(array('/</s', '/>/s', '/\\\/s', '/\{/', '/\}/'), array('&lt;', '&gt;', '&#92;', '&#x007B;', '&#x007D;'), $this->value));
+        return trim(preg_replace(array('/</s', '/>/s', '/\\\/s', '/\{/', '/\}/', '/\$/'), array('&lt;', '&gt;', '&#92;', '&#x007B;', '&#x007D;', '&#36;'), $this->value));
     }
 
     /**

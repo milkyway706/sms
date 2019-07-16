@@ -44,11 +44,14 @@ class Model extends \Kotchasan\Model
         $query = $model->db()->createQuery()
             ->select('id', 'name')
             ->from('user U')
-            ->where(array('id', 'IN', $sql1))
+            ->where(array(
+                array('U.id', 'IN', $sql1),
+                array('U.active', 1),
+            ))
             ->order('U.name')
-            ->toArray();
+            ->cacheOn();
         foreach ($query->execute() as $item) {
-            $model->datas[$item['id']] = $item['name'];
+            $model->datas[$item->id] = $item->name;
         }
 
         return $model;

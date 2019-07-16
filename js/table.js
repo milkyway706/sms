@@ -104,7 +104,7 @@
             }
           });
           if (cs.length == 0) {
-            alert(trans("Please select at least one item"));
+            alert(trans("Please select at least one item").replace(/XXX/, trans('Checkbox')));
           } else {
             cs = cs.join(",");
             var f = this.get("for");
@@ -129,7 +129,8 @@
           }
         });
         if (this.options.dragColumn > -1) {
-          new GSortTable(this.table, {
+          new GDragDrop(this.table, {
+            dragClass: "icon-move",
             endDrag: function() {
               var trs = new Array();
               forEach(temp.table.elems("tr"), function() {
@@ -261,7 +262,7 @@
         if (hs) {
           if (hs[1] == "delete" || hs[1] == "cancel") {
             if (confirm(trans("You want to XXX ?").replace(/XXX/, trans(hs[1])))) {
-              action = "action=" + hs[1] + "&id=" + hs[2];
+              action = "action=" + hs[1] + "&id=" + hs[2] + (hs[4] ? '&opt=' + hs[4] : '');
             }
           } else if (hs[4]) {
             action = "action=" + hs[1] + "_" + hs[2] + "&id=" + hs[4];

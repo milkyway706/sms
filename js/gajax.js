@@ -15,7 +15,7 @@ window.$K = (function() {
       return true;
     },
     isMobile: function() {
-      return navigator.userAgent.match(/(iPhone|iPod|iPad|Android|webOS|BlackBerry|Windows Phone)/i);
+      return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
     },
     init: function(element) {
       forEach(element.querySelectorAll("input,textarea"), function(elem) {
@@ -122,7 +122,7 @@ window.$K = (function() {
                   if (obj.type == "email") {
                     obj.pattern = /^[_\.0-9a-zA-Z-]+@([0-9a-zA-Z][0-9a-zA-Z-]+\.)+[a-zA-Z]{2,6}$/;
                   } else {
-                    obj.pattern = /^[a-z0-9\-\.:\/\#%\?\&\=_]{3,100}$/i;
+                    obj.pattern = /^[a-z0-9\-\.:\/\#%\?\&\=_@~]{3,}$/i;
                   }
                 }
                 text.addEvent("keyup", _docheck);
@@ -133,13 +133,13 @@ window.$K = (function() {
                     obj.dataset["keyboard"] = "1234567890-";
                   } else if (obj.type == "currency") {
                     obj.dataset["keyboard"] = "1234567890-.";
-                  } else if (obj.type == "number" || obj.type == "tel" || obj.type == "currency") {
+                  } else if (obj.type == "number" || obj.type == "tel") {
                     obj.dataset["keyboard"] = "1234567890";
                   }
                 }
                 if (obj.dataset["keyboard"]) {
                   obj.pattern = new RegExp("^(?:[" + obj.dataset["keyboard"].preg_quote() + "]+)$");
-                  if (obj.type == "currency") {
+                  if (obj.type == "integer" || obj.type == "currency") {
                     new GInput(text, obj.dataset["keyboard"], function() {
                       var val = floatval(this.value);
                       if (obj.min) {
@@ -148,7 +148,11 @@ window.$K = (function() {
                       if (obj.max) {
                         val = Math.min(obj.max, val);
                       }
-                      this.value = val.toFixed(2);
+                      if (obj.type == "currency") {
+                        this.value = val.toFixed(2);
+                      } else {
+                        this.value = val;
+                      }
                     });
                   } else {
                     new GInput(text, obj.dataset["keyboard"]);
@@ -176,28 +180,45 @@ window.$K = (function() {
                 elem.style.width = "100%";
                 elem.addEvent("change", function() {
                   if (this.files) {
-                    display.value = this.value;
+                    var input = this,
+                      hs,
+                      files = [],
+                      preview = $E(this.get("data-preview")),
+                      max = floatval(input.get("data-max")),
+                      validImageTypes = ['image/gif', 'image/jpeg', 'image/jpg', 'image/png'];
+                    if (preview) {
+                      preview.innerHTML = '';
+                    }
+                    forEach(input.files, function() {
+                      if (max > 0 && this.size > max) {
+                        input.invalid(input.title);
+                      } else {
+                        files.push(this.name);
+                        input.valid();
+                        if (preview) {
+                          hs = /\.([a-z0-9]+)$/.exec(this.name.toLowerCase());
+                          var div = document.createElement('div');
+                          div.className = 'file-thumb';
+                          if (hs) {
+                            div.innerHTML = hs[1];
+                          }
+                          preview.appendChild(div);
+                          if (validImageTypes.includes(this.type) && window.FileReader) {
+                            var r = new FileReader();
+                            r.onload = function(evt) {
+                              div.innerHTML = '';
+                              div.style.backgroundImage = 'url(' + evt.target.result + ')';
+                            };
+                            r.readAsDataURL(this);
+                          }
+                        }
+                      }
+                    });
+                    display.value = files.join(', ');
                     display.callEvent("change", {
                       value: this.value,
                       files: this.files
                     });
-                    var preview = $E(this.get("data-preview"));
-                    if (preview) {
-                      var input = this,
-                        max = floatval(input.get("data-max"));
-                      forEach(input.files, function() {
-                        if (max > 0 && this.size > max) {
-                          input.invalid(input.title);
-                        } else if (window.FileReader) {
-                          var r = new FileReader();
-                          r.onload = function(evt) {
-                            preview.src = evt.target.result;
-                            input.valid();
-                          };
-                          r.readAsDataURL(this);
-                        }
-                      });
-                    }
                   }
                 });
                 elem.initObj = true;
@@ -404,7 +425,7 @@ window.$K = (function() {
   Date.prototype.compare = function(d) {
     var date, month, year;
     if (Object.isString(d)) {
-      var ds = d.split("-");
+      var ds = d.replace(/\//g, '-').split("-");
       year = floatval(ds[0]);
       month = floatval(ds[1]) - 1;
       date = floatval(ds[2]);
@@ -1797,19 +1818,21 @@ window.$K = (function() {
       pForm = $E(pForm);
       var nParams = [];
       forEach(pForm.getElementsByTagName("*"), function() {
-        var t = this.tagName.toLowerCase();
-        if (t == "input") {
-          if (
-            (this.checked == true && this.type == "radio") ||
-            (this.checked == true && this.type == "checkbox") ||
-            (this.type != "radio" && this.type != "checkbox")
-          ) {
+        if (!this.disabled) {
+          var t = this.tagName.toLowerCase();
+          if (t == "input") {
+            if (
+              (this.checked == true && this.type == "radio") ||
+              (this.checked == true && this.type == "checkbox") ||
+              (this.type != "radio" && this.type != "checkbox")
+            ) {
+              nParams.push(this.name + "=" + this.value);
+            }
+          } else if (t == "select") {
             nParams.push(this.name + "=" + this.value);
+          } else if (t == "textarea") {
+            nParams.push(this.name + "=" + encodeURIComponent(this.innerHTML));
           }
-        } else if (t == "select") {
-          nParams.push(this.name + "=" + this.value);
-        } else if (t == "textarea") {
-          nParams.push(this.name + "=" + encodeURIComponent(this.innerHTML));
         }
       });
       return nParams.join("&");
@@ -2520,17 +2543,18 @@ window.$K = (function() {
         self.options.endDrag.call(self.src);
       }
 
-      function _mousedown(e) {
-        var delay;
-        var temp = this;
+      function _mousedown(event) {
+        var delay,
+          src = GEvent.element(event),
+          temp = this;
 
-        function _cancelClick(e) {
+        function _cancelClick(event) {
           window.clearTimeout(delay);
           this.removeEvent("mouseup", _cancelClick);
         }
-        if (GEvent.isLeftClick(e)) {
-          GEvent.stop(e);
-          self.mousePos = GEvent.pointer(e);
+        if (src == self.src && GEvent.isLeftClick(event)) {
+          GEvent.stop(event);
+          self.mousePos = GEvent.pointer(event);
           if (this.setCapture) {
             this.setCapture();
           }
@@ -2542,6 +2566,8 @@ window.$K = (function() {
             self.options.beginDrag.call(self);
           }, 100);
           temp.addEvent("mouseup", _cancelClick);
+        } else if ($K.isMobile()) {
+          src.callEvent('click');
         }
       }
       this.src.addEvent("mousedown", _mousedown);
@@ -3187,7 +3213,7 @@ window.$K = (function() {
           }
           self._draw();
           GEvent.stop(e);
-        } else if (key == 8) {
+        } else if (key == 8 && self.hidden.readOnly == false) {
           self.setDate(null);
           GEvent.stop(e);
         } else {
@@ -3606,7 +3632,7 @@ window.$K = (function() {
       return this;
     },
     setDate: function(date) {
-      if (date === null || !/[0-9]{2,4}\-[0-9]{1,2}\-[0-9]{1,2}/.test(date)) {
+      if (date === null || !/[0-9]{2,4}\-[0-9]{1,2}\-[0-9]{1,2}(\s[0-9:]+)?/.test(date)) {
         this.date = null;
       } else {
         this.date = this._toDate(date);

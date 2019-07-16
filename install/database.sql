@@ -3,27 +3,40 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Dec 11, 2018 at 03:15 PM
--- Server version: 10.1.37-MariaDB
+-- Generation Time: Mar 31, 2019 at 03:13 PM
+-- Server version: 10.1.38-MariaDB
 -- PHP Version: 7.0.32
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
+-- --------------------------------------------------------
+--
+-- Table structure for table `{prefix}_language`
+--
+
+CREATE TABLE `{prefix}_language` (
+  `id` int(11) NOT NULL,
+  `key` text COLLATE utf8_unicode_ci NOT NULL,
+  `type` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
+  `owner` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `js` tinyint(1) NOT NULL,
+  `th` text COLLATE utf8_unicode_ci,
+  `en` text COLLATE utf8_unicode_ci
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
-
 --
 -- Table structure for table `{prefix}_category`
 --
 
 CREATE TABLE `{prefix}_category` (
-  `id` int(11) UNSIGNED NOT NULL,
+  `id` int(11) NOT NULL,
   `type` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  `category_id` int(11) UNSIGNED NOT NULL,
+  `category_id` int(11) NOT NULL,
   `topic` text COLLATE utf8_unicode_ci NOT NULL,
   `color` varchar(16) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `published` tinyint(1) NOT NULL DEFAULT '1'
+  `published` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -117,13 +130,13 @@ INSERT INTO `{prefix}_course` (`id`, `course_name`, `course_code`, `teacher_id`,
 --
 
 CREATE TABLE `{prefix}_edocument` (
-  `id` int(11) UNSIGNED NOT NULL,
+  `id` int(11) NOT NULL,
   `sender_id` int(11) UNSIGNED NOT NULL,
   `reciever` text COLLATE utf8_unicode_ci NOT NULL,
   `last_update` int(11) UNSIGNED NOT NULL,
   `document_no` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `detail` text COLLATE utf8_unicode_ci NOT NULL,
-  `topic` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `topic` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `ext` varchar(4) COLLATE utf8_unicode_ci NOT NULL,
   `size` double UNSIGNED NOT NULL,
   `file` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
@@ -137,12 +150,12 @@ CREATE TABLE `{prefix}_edocument` (
 --
 
 CREATE TABLE `{prefix}_edocument_download` (
-  `id` int(10) UNSIGNED NOT NULL,
-  `document_id` int(10) UNSIGNED NOT NULL,
+  `id` int(10) NOT NULL,
+  `document_id` int(10) NOT NULL,
   `member_id` int(10) UNSIGNED NOT NULL,
   `downloads` int(10) UNSIGNED NOT NULL,
   `last_update` int(10) UNSIGNED NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -159,22 +172,6 @@ CREATE TABLE `{prefix}_grade` (
   `grade` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `{prefix}_language`
---
-
-CREATE TABLE `{prefix}_language` (
-  `id` int(11) NOT NULL,
-  `key` text COLLATE utf8_unicode_ci NOT NULL,
-  `la` text COLLATE utf8_unicode_ci,
-  `th` text COLLATE utf8_unicode_ci,
-  `en` text COLLATE utf8_unicode_ci,
-  `owner` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  `type` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
-  `js` tinyint(1) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -219,9 +216,9 @@ CREATE TABLE `{prefix}_student` (
 CREATE TABLE `{prefix}_user` (
   `id` int(11) NOT NULL,
   `username` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `salt` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
   `password` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `token` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `salt` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `status` tinyint(1) DEFAULT 0,
   `permission` text COLLATE utf8_unicode_ci NOT NULL,
   `name` varchar(150) COLLATE utf8_unicode_ci NOT NULL,
@@ -261,10 +258,18 @@ ALTER TABLE `{prefix}_category`
   ADD KEY `category_id` (`category_id`);
 
 --
--- Indexes for table `{prefix}_course`
+-- Indexes for table `{prefix}_language`
 --
-ALTER TABLE `{prefix}_course`
+ALTER TABLE `{prefix}_language`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `{prefix}_user`
+--
+ALTER TABLE `{prefix}_user`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `username` (`username`),
+  ADD KEY `id_card` (`id_card`);
 
 --
 -- Indexes for table `{prefix}_edocument`
@@ -279,17 +284,17 @@ ALTER TABLE `{prefix}_edocument_download`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `{prefix}_course`
+--
+ALTER TABLE `{prefix}_course`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `{prefix}_grade`
 --
 ALTER TABLE `{prefix}_grade`
   ADD PRIMARY KEY (`id`),
   ADD KEY `course_id` (`course_id`);
-
---
--- Indexes for table `{prefix}_language`
---
-ALTER TABLE `{prefix}_language`
-  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `{prefix}_personnel`
@@ -307,21 +312,22 @@ ALTER TABLE `{prefix}_student`
   ADD KEY `student_id` (`student_id`);
 
 --
--- Indexes for table `{prefix}_user`
---
-ALTER TABLE `{prefix}_user`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `username` (`username`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
 -- AUTO_INCREMENT for table `{prefix}_category`
 --
 ALTER TABLE `{prefix}_category`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `{prefix}_language`
+--
+ALTER TABLE `{prefix}_language`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `{prefix}_user`
+--
+ALTER TABLE `{prefix}_user`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `{prefix}_course`
 --
@@ -331,24 +337,17 @@ ALTER TABLE `{prefix}_course`
 -- AUTO_INCREMENT for table `{prefix}_edocument`
 --
 ALTER TABLE `{prefix}_edocument`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT for table `{prefix}_edocument_download`
 --
 ALTER TABLE `{prefix}_edocument_download`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT for table `{prefix}_grade`
 --
 ALTER TABLE `{prefix}_grade`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `{prefix}_language`
---
-ALTER TABLE `{prefix}_language`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `{prefix}_user`
---
-ALTER TABLE `{prefix}_user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+

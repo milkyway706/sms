@@ -13,7 +13,7 @@ namespace Edocument\Received;
 use Kotchasan\DataTable;
 use Kotchasan\Date;
 use Kotchasan\Http\Request;
-use Kotchasan\Text;
+use Kotchasan\Language;
 
 /**
  * module=edocument-received.
@@ -28,6 +28,7 @@ class View extends \Gcms\View
      * @var mixed
      */
     private $sender;
+    private $urgencies;
 
     /**
      * แสดงรายการเอกสารรับ.
@@ -39,6 +40,8 @@ class View extends \Gcms\View
      */
     public function render(Request $request, $login)
     {
+        $urgencies = Language::get('URGENCIES');
+        $this->urgencies = array_map(array('Edocument\View\View', 'urgencyStyle'), array_keys($urgencies), array_values($urgencies));
         // รายชื่อผู้ส่ง
         $this->sender = \Edocument\Sender\Model::init();
         // URL สำหรับส่งให้ตาราง
@@ -50,7 +53,7 @@ class View extends \Gcms\View
             /* Model */
             'model' => \Edocument\Received\Model::toDataTable($login),
             /* รายการต่อหน้า */
-            'perPage' => $request->cookie('edocument_perPage', 30)->toInt(),
+            'perPage' => $request->cookie('edocumentReceived_perPage', 30)->toInt(),
             /* เรียงลำดับ */
             'sort' => 'new,last_update DESC',
             /* ฟังก์ชั่นจัดรูปแบบการแสดงผลแถวของตาราง */
@@ -77,23 +80,23 @@ class View extends \Gcms\View
                 'document_no' => array(
                     'text' => '{LNG_Document No.}',
                 ),
+                'urgency' => array(
+                    'text' => '{LNG_Urgency}',
+                    'class' => 'center',
+                ),
                 'new' => array(
                     'text' => '',
                     'colspan' => 2,
                 ),
                 'topic' => array(
-                    'text' => '{LNG_File Name}',
+                    'text' => '{LNG_Document title}',
                 ),
                 'sender_id' => array(
                     'text' => '{LNG_Sender}',
                     'class' => 'center',
                 ),
-                'size' => array(
-                    'text' => '{LNG_size of} {LNG_File}',
-                    'class' => 'center',
-                ),
                 'last_update' => array(
-                    'text' => '{LNG_date}',
+                    'text' => '{LNG_Date}',
                     'class' => 'center',
                 ),
                 'downloads' => array(
@@ -103,6 +106,9 @@ class View extends \Gcms\View
             ),
             /* รูปแบบการแสดงผลของคอลัมน์ (tbody) */
             'cols' => array(
+                'urgency' => array(
+                    'class' => 'center',
+                ),
                 'new' => array(
                     'class' => 'center',
                 ),
@@ -110,9 +116,6 @@ class View extends \Gcms\View
                     'class' => 'center',
                 ),
                 'sender_id' => array(
-                    'class' => 'center',
-                ),
-                'size' => array(
                     'class' => 'center',
                 ),
                 'last_update' => array(
@@ -132,7 +135,7 @@ class View extends \Gcms\View
             ),
         ));
         // save cookie
-        setcookie('edocument_perPage', $table->perPage, time() + 2592000, '/', HOST, HTTPS, true);
+        setcookie('edocumentReceived_perPage', $table->perPage, time() + 2592000, '/', HOST, HTTPS, true);
 
         return $table->render();
     }
@@ -152,10 +155,10 @@ class View extends \Gcms\View
             $item['new'] = '<span class="icon-email-read color-green notext" title="{LNG_Received}"></span>';
         }
         $item['sender_id'] = $this->sender->get($item['sender_id']);
-        $item['topic'] = $item['topic'].'.'.$item['ext'];
-        $item['size'] = Text::formatFileSize($item['size']);
+        $item['topic'] = '<a id="detail_'.$item['id'].'">'.$item['topic'].'</a>';
         $item['last_update'] = Date::format($item['last_update'], 'd M Y');
         $item['ext'] = '<img src="'.(is_file(ROOT_PATH.'skin/ext/'.$item['ext'].'.png') ? WEB_URL.'skin/ext/'.$item['ext'].'.png' : WEB_URL.'skin/ext/file.png').'" alt="'.$item['ext'].'">';
+        $item['urgency'] = isset($this->urgencies[$item['urgency']]) ? $this->urgencies[$item['urgency']] : '';
 
         return $item;
     }

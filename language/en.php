@@ -69,6 +69,7 @@ return array(
     11 => 'Nov',
     12 => 'Dec'
   ),
+  'Name' => 'Name Surname',
   'PERMISSIONS' => array(
     'can_config' => 'Can configure the system'
   ),
@@ -78,6 +79,10 @@ return array(
   'PERSONNEL_STATUS' => array(
     0 => 'Past personnel',
     1 => 'Current personnel'
+  ),
+  'PUBLISHEDS' => array(
+    0 => 'Unpublished',
+    1 => 'Published'
   ),
   'SCHOOL_CATEGORY' => array(
     'department' => 'Department',

@@ -65,16 +65,16 @@ class Model extends \Kotchasan\Model
                     foreach (Language::find('PERSONNEL_DETAILS', array()) as $key => $label) {
                         $personnel['custom'][$key] = $request->post('personnel_'.$key)->topic();
                     }
-                    // อัปเดท Username และ Password ด้วย เลขประชาชนและวันเกิด
+                    // อัปเดต Username และ Password ด้วย เลขประชาชนและวันเกิด
                     $updatepassword = ($request->post('updatepassword')->toInt() == 1);
                     if ($user['name'] == '') {
                         // ไม่ได้กรอก name
                         $ret['ret_personnel_name'] = 'Please fill in';
                     } elseif ($updatepassword && $personnel['id_card'] == '') {
-                        // อัปเดท Username แต่ไม่ได้กรอก id_card
+                        // อัปเดต Username แต่ไม่ได้กรอก id_card
                         $ret['ret_personnel_id_card'] = 'Please fill in';
                     } elseif ($updatepassword && $user['birthday'] == '') {
-                        // อัปเดท Password แต่ไม่ได้กรอก วันเกิด
+                        // อัปเดต Password แต่ไม่ได้กรอก วันเกิด
                         $ret['ret_personnel_birthday'] = 'Please fill in';
                     } elseif (\Personnel\User\Model::exists($index->id, $personnel)) {
                         // เลขประชาชนซ้ำ

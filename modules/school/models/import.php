@@ -249,7 +249,7 @@ class Model extends \Kotchasan\Model
                 // บันทึกเกรด
                 $this->db()->insert($this->getTableName('grade'), $grade);
             } else {
-                // อัปเดทเกรด
+                // อัปเดตเกรด
                 $this->db()->update($this->getTableName('grade'), $search->id, $grade);
             }
             // นำเข้าข้อมูลสำเร็จ

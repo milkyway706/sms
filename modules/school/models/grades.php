@@ -28,7 +28,7 @@ class Model extends \Kotchasan\Model
      *
      * @param int $course_id
      *
-     * @return \static
+     * @return \Kotchasan\Database\QueryBuilder
      */
     public static function toDataTable($course_id)
     {
@@ -71,14 +71,14 @@ class Model extends \Kotchasan\Model
                         // reload
                         $ret['location'] = 'reload';
                     } elseif (($action === 'number' || $action === 'room') && Login::checkPermission($login, array('can_manage_student', 'can_manage_course', 'can_teacher'))) {
-                        // อัปเดทข้อมูล เลขที่ ห้อง
+                        // อัปเดตข้อมูล เลขที่ ห้อง
                         $value = $request->post('value')->topic();
                         $id = (int) $match[1][0];
                         $model->db()->update($table, $id, array($action => $value));
                         // คืนค่า
                         $ret[$action.'_'.$id] = $value;
                     } elseif ($action === 'grade' && Login::checkPermission($login, array('can_manage_student', 'can_manage_course', 'can_teacher', 'can_rate_student'))) {
-                        // อัปเดทข้อมูล เกรด
+                        // อัปเดตข้อมูล เกรด
                         $value = $request->post('value')->topic();
                         $id = (int) $match[1][0];
                         $model->db()->update($table, $id, array($action => $value));

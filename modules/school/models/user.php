@@ -20,11 +20,9 @@ namespace School\User;
 class Model extends \Kotchasan\Model
 {
     /**
-     * Query ข้อมูลนักเรียนสำหรับส่งให้กับ DataTable.
+     * Query ข้อมูลนักเรียนสำหรับส่งให้กับ DataTable
      *
-     * @param array $login
-     *
-     * @return /static
+     * @return \Kotchasan\Database\QueryBuilder
      */
     public static function toDataTable()
     {

@@ -26,11 +26,11 @@ class Model extends \Kotchasan\Model
 {
     /**
      * Query ข้อมูลสำหรับส่งให้กับ DataTable
-     * เฉพาะรายการที่มีสิทธิ์รับ.
+     * เฉพาะรายการที่มีสิทธิ์รับ
      *
      * @param array $login
      *
-     * @return /static
+     * @return \Kotchasan\Database\QueryBuilder
      */
     public static function toDataTable($login)
     {

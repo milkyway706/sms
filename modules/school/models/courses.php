@@ -24,9 +24,9 @@ use Kotchasan\Language;
 class Model extends \Kotchasan\Model
 {
     /**
-     * query รายวิชา สำหรับใส่ลงในตาราง (courses.php).
+     * query รายวิชา สำหรับใส่ลงในตาราง (courses.php)
      *
-     * @return \static
+     * @return \Kotchasan\Database\QueryBuilder
      */
     public static function toDataTable()
     {

@@ -28,7 +28,7 @@ class Model extends \Kotchasan\Model
      *
      * @param object $student
      *
-     * @return \static
+     * @return \Kotchasan\Database\QueryBuilder
      */
     public static function toDataTable($student)
     {
@@ -70,7 +70,7 @@ class Model extends \Kotchasan\Model
                         // reload
                         $ret['location'] = 'reload';
                     } elseif ($action === 'grade' || $action === 'number' || $action === 'room') {
-                        // อัปเดทข้อมูล
+                        // อัปเดตข้อมูล
                         $value = $request->post('value')->topic();
                         $id = (int) $match[1][0];
                         $model->db()->update($table, $id, array($action => $value));

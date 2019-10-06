@@ -25,11 +25,11 @@ use Kotchasan\Language;
 class Model extends \Kotchasan\Model
 {
     /**
-     * Query ข้อมูลสำหรับส่งให้กับ DataTable.
+     * Query ข้อมูลสำหรับส่งให้กับ DataTable
      *
      * @param int $id คืนค่าทุกคน, > คืนค่ารายการที่ $id
      *
-     * @return /static
+     * @return \Kotchasan\Database\QueryBuilder
      */
     public static function toDataTable($id)
     {

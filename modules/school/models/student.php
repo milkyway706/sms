@@ -67,19 +67,19 @@ class Model extends \Kotchasan\Model
                             $urls[$key] = $student[$key];
                         }
                     } else {
-                        // ตัวเอง ไม่สามารถอัปเดท student_id ได้
+                        // ตัวเอง ไม่สามารถอัปเดต student_id ได้
                         unset($student['student_id']);
                     }
-                    // อัปเดท Username และ Password ด้วย เลขประชาชนและวันเกิด
+                    // อัปเดต Username และ Password ด้วย เลขประชาชนและวันเกิด
                     $updatepassword = ($request->post('updatepassword')->toInt() == 1);
                     if ($user['name'] == '') {
                         // ไม่ได้กรอก name
                         $ret['ret_student_name'] = 'Please fill in';
                     } elseif ($updatepassword && $student['id_card'] == '') {
-                        // อัปเดท Username แต่ไม่ได้กรอก id_card
+                        // อัปเดต Username แต่ไม่ได้กรอก id_card
                         $ret['ret_student_id_card'] = 'Please fill in';
                     } elseif ($updatepassword && $user['birthday'] == '') {
-                        // อัปเดท Password แต่ไม่ได้กรอก วันเกิด
+                        // อัปเดต Password แต่ไม่ได้กรอก วันเกิด
                         $ret['ret_student_birthday'] = 'Please fill in';
                     } elseif ($err = \School\User\Model::exists($index->id, $student)) {
                         // เลขประชาชนหรือรหัสนักเรียนซ้ำ

@@ -20,7 +20,7 @@ namespace Personnel\User;
 class Model extends \Kotchasan\Model
 {
     /**
-     * Query ข้อมูลสำหรับส่งให้กับ DataTable.
+     * Query ข้อมูลสำหรับส่งให้กับ DataTable
      *
      * @return \Kotchasan\Database\QueryBuilder
      */

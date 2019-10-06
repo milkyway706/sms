@@ -35,11 +35,11 @@ class Model extends \Kotchasan\Model
     }
 
     /**
-     * อ่านข้อมูลประวัติการดาวน์โหลดใส่ลงในตาราง.
+     * อ่านข้อมูลประวัติการดาวน์โหลดใส่ลงในตาราง
      *
      * @param int $id ID
      *
-     * @return \static
+     * @return \Kotchasan\Database\QueryBuilder
      */
     public static function toDataTable($id)
     {

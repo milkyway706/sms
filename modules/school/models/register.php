@@ -28,7 +28,7 @@ class Model extends \Kotchasan\Model
      *
      * @param int $course_id
      *
-     * @return \static
+     * @return \Kotchasan\Database\QueryBuilder
      */
     public static function toDataTable($course_id)
     {

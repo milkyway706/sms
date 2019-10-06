@@ -42,7 +42,7 @@ class Model extends \Kotchasan\KBase
             // คืนค่า error
             return strip_tags($err->getErrorMessage());
         } else {
-            // อัปเดทรหัสผ่านใหม่
+            // อัปเดตรหัสผ่านใหม่
             $model = new \Kotchasan\Model();
             $salt = uniqid();
             $model->db()->update($model->getTableName('user'), (int) $id, array(

@@ -24,11 +24,9 @@ use Kotchasan\Language;
 class Model extends \Kotchasan\Model
 {
     /**
-     * Query ข้อมูลบุคลากรสำหรับส่งให้กับ DataTable.
+     * Query ข้อมูลบุคลากรสำหรับส่งให้กับ DataTable
      *
-     * @param array $login
-     *
-     * @return \static
+     * @return \Kotchasan\Database\QueryBuilder
      */
     public static function toDataTable()
     {
@@ -110,7 +108,7 @@ class Model extends \Kotchasan\Model
                         // reload
                         $ret['location'] = 'reload';
                     } elseif ($action === 'number' && $canManage) {
-                        // อัปเดทเลขที่
+                        // อัปเดตเลขที่
                         $value = $request->post('value')->toInt();
                         $id = (int) $match[1][0];
                         $this->db()->update($this->getTableName('student'), $id, array('number' => $value));

@@ -140,7 +140,8 @@ CREATE TABLE `{prefix}_edocument` (
   `ext` varchar(4) COLLATE utf8_unicode_ci NOT NULL,
   `size` double UNSIGNED NOT NULL,
   `file` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
-  `ip` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL
+  `ip` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `urgency` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -243,12 +244,6 @@ CREATE TABLE `{prefix}_user` (
   `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `{prefix}_user` (`id`, `username`, `salt`, `password`, `status`, `permission`, `name`) VALUES
-(1, 'admin@localhost', 'admin@localhost', 'b620e8b83d7fcf7278148d21b088511917762014', 1, ',can_config,can_handle_all_edocument,can_upload_edocument,', 'แอดมิน');
---
--- Indexes for dumped tables
---
-
 --
 -- Indexes for table `{prefix}_category`
 --
@@ -350,4 +345,3 @@ ALTER TABLE `{prefix}_edocument_download`
 --
 ALTER TABLE `{prefix}_grade`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-

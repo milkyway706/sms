@@ -394,9 +394,11 @@ main h3 select {
   color: #36c;
 }
 span.icon-sex:before,
+.icon-ban.disabled,
 .icon-valid.disabled {
   color: #ccc;
 }
+.icon-ban.access,
 .icon-valid.access {
   color: #f00;
 }
@@ -433,6 +435,7 @@ td.icons a.icon-minus:before {
 .icon-minus:before {
   font-size: 1.2em;
 }
+.icon-valid.checked,
 .icon-plus:before {
   color: #259b24;
 }
@@ -513,7 +516,7 @@ header .inline {
 }
 .card {
   color: #fff;
-  line-height: 1;
+  line-height: 1.2;
 }
 .card:nth-child(1) {
   background-color: #8cc152;
@@ -584,6 +587,10 @@ header .inline {
 .editinplace_list>li {
   display: table-row;
 }
+#languages.editinplace_list>li {
+  display: block;
+  border-bottom: 1px solid #eee;
+}
 .editinplace_list>li>div {
   display: table-cell;
   vertical-align: middle;
@@ -601,6 +608,7 @@ header .inline {
   padding: 0 0.5em;
   margin: 0 5px;
   vertical-align: middle;
+  background-position: center;
 }
 .editinplace_list .editinplace {
   border-width: 1px;

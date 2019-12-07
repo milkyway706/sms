@@ -85,12 +85,8 @@ function updateAdmin($conn, $table_name, $username, $password, $password_key)
     $result = $query->fetch(\PDO::FETCH_ASSOC);
     if ($result === false) {
         throw new \Exception('ชื่อผู้ใช้ ไม่ถูกต้อง');
-    } elseif ($result['password'] === sha1($password.$result['salt'])) {
-        // password เวอร์ชั่นเก่า
-        $query = $conn->prepare("UPDATE `$table_name` SET `password`=:password WHERE `id`=:id");
-        $query->bindValue(':id', $result['id']);
-        $query->bindValue(':password', sha1($password.$result['salt']));
-        $query->execute();
+    } elseif ($result['password'] != sha1($password.$result['salt'])) {
+        throw new \Exception('รหัสผ่าน ไม่ถูกต้อง');
     }
 }
 

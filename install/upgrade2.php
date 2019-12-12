@@ -41,6 +41,7 @@ if (defined('ROOT_PATH')) {
                     // อัปเดทข้อมูลผู้ดูแลระบบ
                     $config['password_key'] = uniqid();
                 }
+                // ตรวจสอบการ login
                 updateAdmin($conn, $table, $_POST['username'], $_POST['password'], $config['password_key']);
                 $content[] = '<li class="correct">อัปเดทข้อมูลผู้ดูแลระบบสำเร็จ</li>';
                 // ตาราง edocument

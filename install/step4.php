@@ -39,6 +39,9 @@ if (defined('ROOT_PATH')) {
         foreach ($lines as $line) {
             $line = trim($line);
             if ($line && !startsWith($line, '--')) {
+                if (preg_match('/CREATE TABLE `\{prefix\}_([a-z_\-]+)`/i', $line, $match)) {
+                    $commands .= 'DROP TABLE IF EXISTS `'.$_SESSION['prefix'].'_'.$match[1]."`;\n";
+                }
                 $commands .= $line."\n";
             }
         }

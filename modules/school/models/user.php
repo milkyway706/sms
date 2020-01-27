@@ -10,6 +10,8 @@
 
 namespace School\User;
 
+use Kotchasan\Database\Sql;
+
 /**
  * ตารางสมาชิก
  *

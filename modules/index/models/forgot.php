@@ -32,7 +32,7 @@ class Model extends \Kotchasan\KBase
     public static function execute($id, $username)
     {
         // รหัสผ่านใหม่
-        $password = \Kotchasan\Text::rndname(6);
+        $password = substr(uniqid(), 0, 6);
         // ข้อมูลอีเมล
         $subject = '['.self::$cfg->web_title.'] '.Language::get('Get new password');
         $msg = $username.' '.Language::get('Your new password is').' : '.$password;

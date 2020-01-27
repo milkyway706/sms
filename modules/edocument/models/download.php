@@ -15,7 +15,7 @@ use Kotchasan\Http\Request;
 use Kotchasan\Language;
 
 /**
- * โมเดลสำหรับดาวน์โหลดเอกสาร.
+ * โมเดลสำหรับดาวน์โหลดเอกสาร
  *
  * @author Goragod Wiriya <admin@goragod.com>
  *
@@ -32,9 +32,8 @@ class Model extends \Kotchasan\Model
         // session, referer, member, ไม่ใช่สมาชิกตัวอย่าง
         if ($request->initSession() && $request->isReferer() && $login = Login::isMember()) {
             if (Login::notDemoMode($login) && preg_match('/download_([0-9]+)/', $request->post('id')->toString(), $match)) {
-                $model = new static();
                 // อ่านรายการที่เลือก
-                $result = $model->db()->createQuery()
+                $result = $this->db()->createQuery()
                     ->from('edocument E')
                     ->join('edocument_download D', 'LEFT', array(array('D.document_id', 'E.id'), array('D.member_id', (int) $login['id'])))
                     ->where(array('E.id', (int) $match[1]))
@@ -52,12 +51,12 @@ class Model extends \Kotchasan\Model
                             'last_update' => time(),
                         );
                         if (empty($result->download_id)) {
-                            $model->db()->insert($model->getTableName('edocument_download'), $save);
+                            $this->db()->insert($this->getTableName('edocument_download'), $save);
                         } else {
-                            $model->db()->update($model->getTableName('edocument_download'), (int) $result->download_id, $save);
+                            $this->db()->update($this->getTableName('edocument_download'), (int) $result->download_id, $save);
                         }
                         // id สำหรบไฟล์ดาวน์โหลด
-                        $id = \Kotchasan\Text::rndname(32);
+                        $id = md5(uniqid());
                         // บันทึกรายละเอียดการดาวน์โหลดลง SESSION
                         $_SESSION[$id] = array(
                             'file' => $file,
@@ -92,8 +91,7 @@ class Model extends \Kotchasan\Model
      */
     public static function get($id, $login)
     {
-        $model = new static();
-        $sql2 = $model->db()->createQuery()
+        $sql2 = static::createQuery()
             ->select('E.downloads')
             ->from('edocument_download E')
             ->where(array(
@@ -101,7 +99,7 @@ class Model extends \Kotchasan\Model
                 array('E.member_id', (int) $login['id']),
             ))
             ->limit(1);
-        $search = $model->db()->createQuery()
+        $search = static::createQuery()
             ->from('edocument A')
             ->where(array('A.id', $id))
             ->first('A.id', 'A.document_no', array($sql2, 'new'), 'A.topic', 'A.ext', 'A.sender_id', 'A.size', 'A.last_update', 'A.reciever', 'A.detail');

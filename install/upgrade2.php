@@ -46,8 +46,10 @@ if (defined('ROOT_PATH')) {
                 $content[] = '<li class="correct">อัปเดทข้อมูลผู้ดูแลระบบสำเร็จ</li>';
                 // ตาราง edocument
                 $table = $db_config['prefix'].'_edocument';
-                $conn->query("ALTER TABLE `$table` ADD `urgency` TINYINT(1) NOT NULL DEFAULT 0");
-                $content[] = '<li class="correct">ปรับปรุงตาราง `'.$table.'` สำเร็จ</li>';
+                if (!fieldExists($conn, $table, 'urgency')) {
+                    $conn->query("ALTER TABLE `$table` ADD `urgency` TINYINT(1) NOT NULL DEFAULT 0");
+                    $content[] = '<li class="correct">ปรับปรุงตาราง `'.$table.'` สำเร็จ</li>';
+                }
                 // บันทึก settings/config.php
                 $config['version'] = $new_config['version'];
                 if (isset($new_config['default_icon'])) {

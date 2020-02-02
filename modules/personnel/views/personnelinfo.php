@@ -53,7 +53,7 @@ class View extends \Gcms\View
             $content[] = '<p class=tr><span class="td icon-category">'.$category->label($type).'</span><span class=td>:</span><span class=td>'.$category->get($type, $index->$type).'</span></p>';
         }
         $index->custom = @unserialize($index->custom);
-        foreach (Language::find('PERSONNEL_DETAILS', array()) as $type => $label) {
+        foreach (Language::get('PERSONNEL_DETAILS', array()) as $type => $label) {
             $value = is_array($index->custom) && isset($index->custom[$type]) ? $index->custom[$type] : '';
             $content[] = '<p class=tr><span class="td icon-'.$type.'">'.$label.'</span><span class=td>:</span><span class=td>'.$value.'</span></p>';
         }

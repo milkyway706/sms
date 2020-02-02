@@ -57,12 +57,12 @@ class Model extends \Kotchasan\Model
                         'order' => $request->post('personnel_order')->toInt(),
                     );
                     $urls = array();
-                    foreach (Language::get('CATEGORIES') as $key => $label) {
+                    foreach (Language::get('CATEGORIES', array()) as $key => $label) {
                         $personnel[$key] = $request->post('personnel_'.$key)->toInt();
                         $urls[$key] = $personnel[$key];
                     }
                     // custom item
-                    foreach (Language::find('PERSONNEL_DETAILS', array()) as $key => $label) {
+                    foreach (Language::get('PERSONNEL_DETAILS', array()) as $key => $label) {
                         $personnel['custom'][$key] = $request->post('personnel_'.$key)->topic();
                     }
                     // อัปเดต Username และ Password ด้วย เลขประชาชนและวันเกิด

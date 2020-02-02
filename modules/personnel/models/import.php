@@ -58,9 +58,9 @@ class Model extends \Kotchasan\Model
                             $ret['ret_'.$item] = Language::get('The type of file is invalid');
                         } else {
                             // หมวดหมู่ของบุคลากร
-                            $this->categories = array_keys(Language::find('CATEGORIES', array()));
+                            $this->categories = array_keys(Language::get('CATEGORIES', array()));
                             // รายละเอียดของบุคลาการ
-                            $this->details = array_keys(Language::find('PERSONNEL_DETAILS', array()));
+                            $this->details = array_keys(Language::get('PERSONNEL_DETAILS', array()));
                             // import ข้อมูล
                             \Kotchasan\Csv::read($file->getTempFileName(), array($this, 'onRow'));
                         }

@@ -108,7 +108,7 @@ class View extends \Gcms\View
             ));
         }
         // custom item
-        foreach (Language::find('PERSONNEL_DETAILS', array()) as $type => $label) {
+        foreach (Language::get('PERSONNEL_DETAILS', array()) as $type => $label) {
             $fieldset->add('text', array(
                 'id' => 'personnel_'.$type,
                 'labelClass' => 'g-input icon-edit',

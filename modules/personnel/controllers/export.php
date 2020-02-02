@@ -47,7 +47,7 @@ class Controller extends \Kotchasan\Controller
             $person[1][] = 1;
         }
         // รายละเอียดของบุคลากร
-        foreach (Language::find('PERSONNEL_DETAILS', array()) as $key => $label) {
+        foreach (Language::get('PERSONNEL_DETAILS', array()) as $key => $label) {
             $header[] = $label;
             $person[0][] = '';
             $person[1][] = '';

@@ -51,7 +51,7 @@ class Controller extends \Kotchasan\Controller
             $person[$type] = '';
         }
         // custom item
-        foreach (Language::find('PERSONNEL_DETAILS', array()) as $k => $v) {
+        foreach (Language::get('PERSONNEL_DETAILS', array()) as $k => $v) {
             $header[$k] = $v;
             $person[$k] = '';
         }

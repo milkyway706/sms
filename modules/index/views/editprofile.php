@@ -15,7 +15,7 @@ use Kotchasan\Html;
 use Kotchasan\Http\Request;
 
 /**
- * module=editprofile.
+ * module=editprofile
  *
  * @author Goragod Wiriya <admin@goragod.com>
  *

@@ -15,7 +15,7 @@ use Kotchasan\Html;
 use Kotchasan\Province;
 
 /**
- * module=school-settings.
+ * module=school-settings
  *
  * @author Goragod Wiriya <admin@goragod.com>
  *
@@ -83,6 +83,15 @@ class View extends \Gcms\View
             'value' => isset(self::$cfg->address) ? self::$cfg->address : '',
         ));
         $groups = $fieldset->add('groups');
+        // province
+        $groups->add('text', array(
+            'id' => 'province',
+            'labelClass' => 'g-input icon-location',
+            'itemClass' => 'width33',
+            'label' => '{LNG_Province}',
+            'comment' => '%SCHOOLPROVINCE%',
+            'value' => isset(self::$cfg->province) ? self::$cfg->province : '',
+        ));
         // provinceID
         $groups->add('select', array(
             'id' => 'provinceID',
@@ -93,18 +102,9 @@ class View extends \Gcms\View
             'options' => \Kotchasan\Province::all(),
             'value' => isset(self::$cfg->provinceID) ? self::$cfg->provinceID : 102,
         ));
-        // province
-        $groups->add('text', array(
-            'id' => 'province',
-            'labelClass' => 'g-input icon-location',
-            'itemClass' => 'width33',
-            'label' => '{LNG_Province}',
-            'comment' => '%SCHOOLPROVINCE%',
-            'value' => isset(self::$cfg->province) ? self::$cfg->province : '',
-        ));
         // zipcode
         $groups->add('number', array(
-            'id' => 'student_zipcode',
+            'id' => 'zipcode',
             'labelClass' => 'g-input icon-location',
             'itemClass' => 'width33',
             'label' => '{LNG_Zipcode}',
@@ -115,7 +115,7 @@ class View extends \Gcms\View
         // country
         $groups->add('select', array(
             'id' => 'country',
-            'labelClass' => 'g-input icon-world',
+            'labelClass' => 'g-input icon-location',
             'itemClass' => 'width33',
             'label' => '{LNG_Country}',
             'options' => \Kotchasan\Country::all(),
@@ -197,7 +197,7 @@ class View extends \Gcms\View
             'value' => '{LNG_Save}',
         ));
         // Javascript
-        $form->script('initEditProfile("", '.json_encode(Province::countries()).');');
+        $form->script("countryChanged('');");
 
         return $form->render();
     }

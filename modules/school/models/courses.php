@@ -37,7 +37,7 @@ class Model extends \Kotchasan\Model
             ->where(array('course_id', 'C.id'));
 
         return $model->db()->createQuery()
-            ->select('C.id', 'C.course_code', 'C.course_name', 'C.teacher_id', 'C.year', 'C.term', 'C.class', 'C.period', array($q1, 'student'))
+            ->select('C.id', 'C.course_code', 'C.course_name', 'C.teacher_id', 'C.year', 'C.term', 'C.class', 'C.credit', 'C.period', array($q1, 'student'))
             ->from('course C');
     }
 

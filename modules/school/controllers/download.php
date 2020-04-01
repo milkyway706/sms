@@ -104,7 +104,7 @@ class Controller extends \Kotchasan\Controller
             'room' => $request->get('room')->toInt(),
         );
         $category = \School\Category\Model::init();
-        $grade = Language::get('SCHOOL_GRADES');
+        $grade = Language::get('SCHOOL_TYPIES');
         $datas = array();
         foreach (\School\Download\Model::grade($params) as $item) {
             $item['room'] = $category->get('room', $item['room']);

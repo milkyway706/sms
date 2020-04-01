@@ -15,7 +15,7 @@ use Kotchasan\DataTable;
 use Kotchasan\Http\Request;
 
 /**
- * module=school-courses.
+ * module=school-courses
  *
  * @author Goragod Wiriya <admin@goragod.com>
  *
@@ -79,7 +79,7 @@ class View extends \Gcms\View
                 'name' => 'year',
                 'default' => 0,
                 'text' => '{LNG_Academic year}',
-                'options' => array(0 => '{LNG_all items}') + \School\Academicyear\Model::toSelect(),
+                'options' => array(0 => '{LNG_all items}')+\School\Academicyear\Model::toSelect(),
                 'value' => $year,
             ),
             'term' => array(
@@ -165,6 +165,10 @@ class View extends \Gcms\View
                     'class' => 'center',
                     'sort' => 'class',
                 ),
+                'credit' => array(
+                    'text' => '{LNG_Credit}',
+                    'class' => 'center',
+                ),
                 'period' => array(
                     'text' => '{LNG_Period}',
                     'class' => 'center',
@@ -183,6 +187,9 @@ class View extends \Gcms\View
                     'class' => 'center',
                 ),
                 'class' => array(
+                    'class' => 'center',
+                ),
+                'credit' => array(
                     'class' => 'center',
                 ),
                 'period' => array(

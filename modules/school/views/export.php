@@ -50,8 +50,8 @@ class View extends \Gcms\View
         // template
         $template = Template::createFromFile(ROOT_PATH.'modules/school/views/mygrade.html');
         $template->add(array(
-            '/%CREDITS%/' => number_format($credit, 1, '.', ''),
-            '/%GRADES%/' => number_format($grade, 2, '.', ''),
+            '/%CREDITS%/' => $credit,
+            '/%GRADES%/' => $grade,
             '/%STUDENT%/' => $student->student_id,
             '/%NAME%/' => $student->name,
             '/%NUMBER%/' => $student->number,

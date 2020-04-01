@@ -1,17 +1,3 @@
-function initSchool(module, keyword) {
-  var patt = new RegExp("(" + keyword + ")_([0-9]+)");
-  forEach($G("datatable").elems("*"), function() {
-    if (patt.test(this.id)) {
-      $G(this).addEvent("change", function() {
-        var hs = patt.exec(this.id);
-        if (hs) {
-          send("index.php/school/model/" + module + "/action", "action=" + hs[1] + "&id=" + hs[2] + "&value=" + this.value, doFormSubmit);
-        }
-      });
-    }
-  });
-}
-
 function initSchoolImportStudent() {
   callClick("example", function() {
     var q = "module=school-export&type=student";

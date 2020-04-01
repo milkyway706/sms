@@ -13,6 +13,7 @@ namespace School\Grade;
 use Kotchasan\DataTable;
 use Kotchasan\Http\Request;
 use Kotchasan\Language;
+use Kotchasan\Number;
 
 /**
  * module=school-grades.
@@ -28,17 +29,13 @@ class View extends \Gcms\View
      */
     private $typies;
     /**
-     * @var mixed
+     * @var int
      */
-    private $credit;
+    private $credit = 0;
     /**
-     * @var mixed
+     * @var int
      */
-    private $total_credit;
-    /**
-     * @var mixed
-     */
-    private $total;
+    private $total = 0;
 
     /**
      * ตารางผลการเรียน.
@@ -54,9 +51,6 @@ class View extends \Gcms\View
         $student->year = $request->request('year', self::$cfg->academic_year)->toInt();
         $student->term = $request->request('term', self::$cfg->term)->toInt();
         $this->typies = Language::get('COURSE_TYPIES');
-        $this->credit = 0;
-        $this->total_credit = 0;
-        $this->total = 0;
         // URL สำหรับส่งให้ตาราง
         $uri = $request->createUriWithGlobals(WEB_URL.'index.php');
         // ตาราง
@@ -153,12 +147,13 @@ class View extends \Gcms\View
      */
     public function onRow($item, $o, $prop)
     {
-        if ($item['credit'] > 0 && $item['grade'] > 0) {
+        if ($item['credit'] == 0.0) {
+            $item['credit'] = '';
+        } else {
             $this->credit += $item['credit'];
             $this->total += ($item['grade'] * $item['credit']);
+            $item['credit'] = $item['credit'];
         }
-        $this->total_credit += $item['credit'];
-        $item['credit'] = $item['credit'] == 0 ? '' : $item['credit'];
         $item['type'] = isset($this->typies[$item['type']]) ? $this->typies[$item['type']] : '';
 
         return $item;
@@ -171,10 +166,6 @@ class View extends \Gcms\View
      */
     public function onCreateFooter()
     {
-        if ($this->total_credit > 0) {
-            return '<tr><td colspan=2></td><td class=center>{LNG_Academic results}</td><td class=center>'.number_format($this->credit, 1, '.', '').'</td><td class=center>'.number_format($this->total / $this->total_credit, 2, '.', '').'</td></tr>';
-        } else {
-            return '<tr><td colspan=5></td></tr>';
-        }
+        return '<tr><td colspan=2></td><td class=center>{LNG_Academic results}</td><td class=center>'.number_format($this->credit, 1, '.', '').'</td><td class=center>'.Number::format(self::div($this->total, $this->credit)).'</td></tr>';
     }
 }

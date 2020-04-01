@@ -95,7 +95,12 @@ class Controller extends \Kotchasan\KBase
                     'text' => '{LNG_Settings}',
                     'url' => 'index.php?module=school-settings',
                 ),
+                array(
+                    'text' => '{LNG_Grade calculation}',
+                    'url' => 'index.php?module=school-gradesettings',
+                ),
             );
+
             foreach (Language::get('SCHOOL_CATEGORY') as $type => $text) {
                 $submenus[] = array(
                     'text' => $text,

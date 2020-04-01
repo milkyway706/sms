@@ -187,15 +187,21 @@ class Model extends \Kotchasan\Model
                 // student_id
                 $grade['student_id'] = iconv('Windows-874', 'UTF-8', Text::topic($value));
             } elseif ($key == 3) {
+                // Midterm
+                $grade['midterm'] = min(50, (int) $value);
+            } elseif ($key == 4) {
+                // Final
+                $grade['final'] = min(50, (int) $value);
+            } elseif ($key == 5) {
                 // grade
                 $grade['grade'] = iconv('Windows-874', 'UTF-8', Text::topic($value));
-            } elseif ($key == 4) {
+            } elseif ($key == 6) {
                 // room
                 $grade['room'] = (int) $value;
-            } elseif ($key == 5) {
+            } elseif ($key == 7) {
                 // year
                 $course['year'] = (int) $value;
-            } elseif ($key == 6) {
+            } elseif ($key == 8) {
                 // term
                 $course['term'] = (int) $value;
             }
@@ -236,6 +242,11 @@ class Model extends \Kotchasan\Model
                 $grade['course_id'] = $search['course_id'];
             }
             $grade['student_id'] = $search['student_id'];
+            $grade['type'] = array_search($grade['grade'], Language::get('SCHOOL_TYPIES'));
+            if ($grade['type'] === false) {
+                $grade['type'] = 0;
+                $grade['grade'] = \School\Score\Model::toGrade($grade['type'], $grade['midterm'], $grade['final']);
+            }
             // ตรวจสอบรายการซ้ำ
             $search = $this->db()->createQuery()
                 ->from('grade')

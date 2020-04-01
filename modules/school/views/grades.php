@@ -31,7 +31,7 @@ class View extends \Gcms\View
     /**
      * @var string
      */
-    private $grade;
+    private $type;
     /**
      * @var mixed
      */
@@ -55,9 +55,9 @@ class View extends \Gcms\View
         // ค่าที่ส่งมา
         $room = $request->request('room')->toInt();
         // โหลดตัวแปรต่างๆ
-        $this->grade = '<option value=""></option>';
-        foreach (Language::get('SCHOOL_GRADES') as $k => $v) {
-            $this->grade .= '<option value="'.$k.'">'.$v.'</option>';
+        $this->type = '';
+        foreach (Language::get('SCHOOL_TYPIES') as $k => $v) {
+            $this->type .= '<option value="'.$k.'">'.$v.'</option>';
         }
         $this->category = \School\Category\Model::init();
         $rooms = $this->category->toSelect('room');
@@ -118,6 +118,17 @@ class View extends \Gcms\View
                     'text' => '{LNG_Room}',
                     'class' => 'center',
                 ),
+                'type' => array(
+                    'text' => '',
+                ),
+                'midterm' => array(
+                    'text' => '{LNG_Midterm}',
+                    'class' => 'center',
+                ),
+                'final' => array(
+                    'text' => '{LNG_Final}',
+                    'class' => 'center',
+                ),
                 'grade' => array(
                     'text' => '{LNG_Grade}',
                     'class' => 'center',
@@ -126,6 +137,15 @@ class View extends \Gcms\View
             /* รูปแบบการแสดงผลของคอลัมน์ (tbody) */
             'cols' => array(
                 'room' => array(
+                    'class' => 'center',
+                ),
+                'type' => array(
+                    'class' => 'center',
+                ),
+                'midterm' => array(
+                    'class' => 'center',
+                ),
+                'final' => array(
                     'class' => 'center',
                 ),
                 'grade' => array(
@@ -145,8 +165,6 @@ class View extends \Gcms\View
         }
         // save cookie
         setcookie('grades_perPage', $table->perPage, time() + 3600 * 24 * 365, '/');
-        // Javascript
-        $table->script('initSchool("grades", "grade|number|room");');
         // คืนค่า HTML
 
         return $table->render();
@@ -162,13 +180,16 @@ class View extends \Gcms\View
     public function onRow($item, $o, $prop)
     {
         $item['name'] = '<a id=view_'.$item['student'].'>'.$item['name'].'</a>';
-        $item['grade'] = '<label><select id=grade_'.$item['id'].'>'.str_replace('value="'.$item['grade'].'"', 'value="'.$item['grade'].'" selected', $this->grade).'</select></label>';
         if ($this->canManage) {
             $item['room'] = '<label><select id=room_'.$item['id'].'>'.str_replace('value="'.$item['room'].'"', 'value="'.$item['room'].'" selected', $this->room).'</select></label>';
-            $item['number'] = '<label><input type=text size=5 id=number_'.$item['id'].' value="'.$item['number'].'"></label>';
+            $item['number'] = '<label><input type=number size=5 id=number_'.$item['id'].' value="'.$item['number'].'"></label>';
+            $item['type'] = '<label><select id=type_'.$item['id'].'>'.str_replace('value="'.$item['type'].'"', 'value="'.$item['type'].'" selected', $this->type).'</select></label>';
+            $item['midterm'] = '<label><input type=number size=5 max=50 id=midterm_'.$item['id'].' value="'.$item['midterm'].'"></label>';
+            $item['final'] = '<label><input type=number size=5 max=50 id=final_'.$item['id'].' value="'.$item['final'].'"></label>';
         } else {
             $item['room'] = $this->category->get('room', $item['room']);
         }
+        $item['grade'] = '<span id=grade_'.$item['id'].'>'.$item['grade'].'</span>';
 
         return $item;
     }

@@ -98,4 +98,17 @@ class View extends \Kotchasan\View
 
         return empty($result) ? '' : implode(', ', $result);
     }
+
+    /**
+     * ฟังก์ชั่นหาร ถ้าตัวหาร=0 คืนค่า 0
+     *
+     * @param int $dividend ตัวตั้ง
+     * @param int $divisor ตัวหาร
+     *
+     * @return int
+     */
+    public static function div($dividend, $divisor)
+    {
+        return empty($divisor) ? 0 : $dividend / $divisor;
+    }
 }

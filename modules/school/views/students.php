@@ -162,7 +162,7 @@ class View extends \Gcms\View
                     'title' => '{LNG_Details of} {LNG_Student}',
                 ),
                 'report' => array(
-                    'class' => 'icon-report button blue notext',
+                    'class' => 'icon-elearning button blue notext',
                     'href' => WEB_URL.'index.php?module=school-grade&amp;id=:id',
                     'title' => '{LNG_Grade Report}',
                 ),
@@ -176,8 +176,6 @@ class View extends \Gcms\View
         // save cookie
         setcookie('student_perPage', $table->perPage, time() + 3600 * 24 * 365, '/');
         setcookie('student_sort', $table->sort, time() + 3600 * 24 * 365, '/');
-        // Javascript
-        $table->script('initSchool("students", "number");');
         // คืนค่า HTML
 
         return $table->render();

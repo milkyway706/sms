@@ -188,10 +188,10 @@ class Model extends \Kotchasan\Model
                 $grade['student_id'] = iconv('Windows-874', 'UTF-8', Text::topic($value));
             } elseif ($key == 3) {
                 // Midterm
-                $grade['midterm'] = min(50, (int) $value);
+                $grade['midterm'] = (int) $value;
             } elseif ($key == 4) {
                 // Final
-                $grade['final'] = min(50, (int) $value);
+                $grade['final'] = (int) $value;
             } elseif ($key == 5) {
                 // grade
                 $grade['grade'] = iconv('Windows-874', 'UTF-8', Text::topic($value));

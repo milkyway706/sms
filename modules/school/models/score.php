@@ -57,12 +57,14 @@ class Model extends \Kotchasan\KBase
     {
         if (empty($type)) {
             // คำนวณเกรด
-            $vale = $midterm + $final;
+            $value = $midterm + $final;
             foreach (self::get() as $k => $v) {
-                if ($vale <= $k) {
+                if ($value <= $k) {
                     return $v;
                 }
             }
+
+            return 'Err';
         } else {
             // เกรดที่เลือกจากภาษา
             return \Kotchasan\Language::find('SCHOOL_TYPIES', 0, $type);

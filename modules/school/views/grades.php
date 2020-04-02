@@ -184,8 +184,8 @@ class View extends \Gcms\View
             $item['room'] = '<label><select id=room_'.$item['id'].'>'.str_replace('value="'.$item['room'].'"', 'value="'.$item['room'].'" selected', $this->room).'</select></label>';
             $item['number'] = '<label><input type=number size=5 id=number_'.$item['id'].' value="'.$item['number'].'"></label>';
             $item['type'] = '<label><select id=type_'.$item['id'].'>'.str_replace('value="'.$item['type'].'"', 'value="'.$item['type'].'" selected', $this->type).'</select></label>';
-            $item['midterm'] = '<label><input type=number size=5 max=50 id=midterm_'.$item['id'].' value="'.$item['midterm'].'"></label>';
-            $item['final'] = '<label><input type=number size=5 max=50 id=final_'.$item['id'].' value="'.$item['final'].'"></label>';
+            $item['midterm'] = '<label><input type=number size=5 max=100 id=midterm_'.$item['id'].' value="'.$item['midterm'].'"></label>';
+            $item['final'] = '<label><input type=number size=5 max=100 id=final_'.$item['id'].' value="'.$item['final'].'"></label>';
         } else {
             $item['room'] = $this->category->get('room', $item['room']);
         }

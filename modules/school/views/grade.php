@@ -151,8 +151,7 @@ class View extends \Gcms\View
             $item['credit'] = '';
         } else {
             $this->credit += $item['credit'];
-            $this->total += ($item['grade'] * $item['credit']);
-            $item['credit'] = $item['credit'];
+            $this->total += ((int) $item['grade'] * $item['credit']);
         }
         $item['type'] = isset($this->typies[$item['type']]) ? $this->typies[$item['type']] : '';
 

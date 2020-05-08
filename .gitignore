@@ -6,4 +6,4 @@
 .vscode
 robots.txt
 datas/
-settings/
+settings/*

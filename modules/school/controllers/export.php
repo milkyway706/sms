@@ -81,7 +81,7 @@ class Controller extends \Kotchasan\Controller
                 $course_typies = Language::get('COURSE_TYPIES');
                 $credit = 0;
                 $total = 0;
-                foreach (\School\Grade\Model::toDataTable($student)->toArray()->cacheOn()->execute() as $item) {
+                foreach (\School\Grade\Model::toDataTable($student)->toArray()->cacheOn()->order('course_code')->execute() as $item) {
                     if ($item['credit'] == 0.0) {
                         $item['credit'] = '';
                     } else {
@@ -96,7 +96,7 @@ class Controller extends \Kotchasan\Controller
                         $item['grade'],
                     );
                 }
-                $grade = \Gcms\View::div($total, $credit);
+                $grade = number_format(\Gcms\View::div($total, $credit), 2, '.', '');
                 if ($request->get('export')->toString() == 'print') {
                     // ส่งออกเป็น HTML สำหรับพิมพ์
                     return \School\Export\View::render($student, $header, $datas, $credit, $grade);

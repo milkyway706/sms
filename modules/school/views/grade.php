@@ -13,7 +13,6 @@ namespace School\Grade;
 use Kotchasan\DataTable;
 use Kotchasan\Http\Request;
 use Kotchasan\Language;
-use Kotchasan\Number;
 
 /**
  * module=school-grades.
@@ -151,7 +150,7 @@ class View extends \Gcms\View
             $item['credit'] = '';
         } else {
             $this->credit += $item['credit'];
-            $this->total += ((int) $item['grade'] * $item['credit']);
+            $this->total += ($item['grade'] * $item['credit']);
         }
         $item['type'] = isset($this->typies[$item['type']]) ? $this->typies[$item['type']] : '';
 
@@ -165,6 +164,6 @@ class View extends \Gcms\View
      */
     public function onCreateFooter()
     {
-        return '<tr><td colspan=2></td><td class=center>{LNG_Academic results}</td><td class=center>'.number_format($this->credit, 1, '.', '').'</td><td class=center>'.Number::format(self::div($this->total, $this->credit)).'</td></tr>';
+        return '<tr><td colspan=2></td><td class=center>{LNG_Academic results}</td><td class=center>'.number_format($this->credit, 1, '.', '').'</td><td class=center>'.number_format(self::div($this->total, $this->credit), 2, '.', '').'</td></tr>';
     }
 }
